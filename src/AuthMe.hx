@@ -1,4 +1,4 @@
-package src;
+package;
 
 import haxe.Constraints.Function;
 
@@ -34,9 +34,9 @@ class Password {
      * @param hint - Set your password hint. 
      */
     
-    public static function setPassword(password:String = "Mypass123456", hint:String = "starts with My")
+    public static function setPassword(_password:String = "Mypass123456", hint:String = "starts with My")
     {
-        src.Main.Password.password = password;
+        password = _password;
         passwordhint = hint;
         passwordtype = PasswordTypes.PASSWORD;
     }
@@ -82,13 +82,6 @@ class Password {
 
         }
         
-    }
-
-    static function main() {
-    
-        
     
     }
-    
-
 }

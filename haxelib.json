@@ -1,16 +1,4 @@
 {
-    "name": "AuthMe",
-    "url" : "https://github.com/jasononeil/useless/",
-    "license": "MIT",
-    "tags": ["authentication", "password"],
-    "description": "This library is used to create paawords and authenticatiom methods.",
-    "version": "1.0.0",
-    "classPath": "src/",
-    "releasenote": "Initial release, everything is working correctly.",
-    "contributors": ["ShaharMS"],
-    "dependencies": {
-      "tink_macro": "",
-      "flixel": "4.9.0"
-    },
-    "main": "src/Main.hx"
-  }
+    "name": "authme",
+    "classPath": "src"
+}
