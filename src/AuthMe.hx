@@ -1,5 +1,6 @@
-package;
+package src;
 
+import haxe.SysTools;
 import haxe.Constraints.Function;
 
 
@@ -9,22 +10,23 @@ enum PasswordTypes {
     PIN;
 }
 
-class Password {
+/**
+ * Used for Authenticating stuff.
+ * Right Now Supports:
+ * [Passwords]
+ * [PIN] [Codes]
+ */
+
+class AuthMe {
     
     
-    public static var password:String;
-
-    public static var passwordhint:String;
-
-    public static var PIN:Int;
-
-    public static var PINhint:String;
-
-    public static var fallbackExists:Bool = false;
-
-    public static var passwrordToVerify:String;
-
-    public static var passwordtype:PasswordTypes;
+    var password:String;
+    var passwordhint:String;
+    var PIN:Int;
+    var PINhint:String;
+    var fallbackExists:Bool = false;
+    var passwrordToVerify:String;
+    var passwordtype:PasswordTypes;
 
     
     /**
@@ -34,7 +36,7 @@ class Password {
      * @param hint - Set your password hint. 
      */
     
-    public static function setPassword(_password:String = "Mypass123456", hint:String = "starts with My")
+    public function setPassword(_password:String = "Mypass123456", hint:String = "starts with My")
     {
         password = _password;
         passwordhint = hint;
@@ -50,7 +52,7 @@ class Password {
      * @param setFallback - In case you dont remember the pin, you can choose if you want to have a password as a fallback, for when you dont remember your PIN code.
      */
 
-    public static function setPINCode(pincode:Int = 1111, pinhint:String = "starts with 1", setFallback:Bool = true)
+    public function setPINCode(pincode:Int = 1111, pinhint:String = "starts with 1", setFallback:Bool = true)
     {
         
         PIN = pincode;
@@ -63,25 +65,72 @@ class Password {
     }
 
     
-
-    public static function checkPasswords(insertedpassword:String, passwordCorrectCallback:Function,verifyAsPIN:Bool = false) {
+    /**
+     * Check if the password inserted is correct.
+     * if the password to verify is a PIN, then [verifyAsPIN] should be true
+     * NOTICE: If the password is correct - [correctPasswordCallback()] will be called.
+     *         If its incorrect - [incorrectPasswordCallback()] will be called.
+     * If you want a certine function to be called when the password is correct/incorrect - OVERRIDE THESE FUNCTIONS!
+     * @param insertedpassword - The user-inserted password.
+     * @param verifyAsPIN - if [verifyAsPIN] = [true], then the password verification method will include a fallback to a regular password, and will not accept regular passwords unless the PIN is incorrect.
+     */
+    
+    public function checkPasswords(insertedpassword:String, verifyAsPIN:Bool = false) {
 
         if (verifyAsPIN = false)
         {
             if (passwordtype == PasswordTypes.PASSWORD)
             {
-                if (insertedpassword == Password.password)
+                if (insertedpassword == password)
                 {
-
+                    correctPasswordCallback();
+                }
+                else
+                {
+                    incorrectPasswordCallback();
+                }
+            }
+            else if (passwordtype == PasswordTypes.PIN)
+            {
+                if (insertedpassword == Std.string(PIN))
+                {
+                    correctPasswordCallback();
+                }
+                else
+                {
+                    incorrectPasswordCallback();
                 }
             }
         }
 
         else if (verifyAsPIN = true)
         {
-
+            if (passwordtype == PasswordTypes.PIN)
+            {
+                if (insertedpassword == Std.string(PIN))
+                {
+                    correctPasswordCallback();
+                }
+                else 
+                {
+                     
+                }
+            }
         }
         
     
+    }
+    public static function passwordFallback() {
+        Sys.println("PIN incorrect! please insert password:");
+        
+        
+    }
+
+    public static function correctPasswordCallback() {
+        Sys.println("password correct!");
+    }
+
+    public static function incorrectPasswordCallback() {
+        Sys.println("password incorrect!");
     }
 }
