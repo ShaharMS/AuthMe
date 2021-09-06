@@ -1,6 +1,6 @@
 {
     "name": "authme",
-    "classPath": "src",
+    "classPath": "source",
     "license": "MIT",
     "releasenote": "added PIN support",
     "contributors": ["ShaharMS"],

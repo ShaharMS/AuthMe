@@ -27,12 +27,16 @@ class AuthMe {
     var passwrordToVerify:String;
     var passwordtype:PasswordTypes;
 
+    public function new() {
+        
+    }
+
     
     /**
      * Set your password & hint here.
      * WARNING: Don't use characters from RTL languages like Hebrew/Arabic
-     * @param password - Set your password.
-     * @param hint - Set your password hint. 
+     * @param password Set your password.
+     * @param hint Set your password hint. 
      */
     
     public function setPassword(_password:String = "Mypass123456", hint:String = "starts with My")
@@ -46,12 +50,12 @@ class AuthMe {
      * Set a PIN code and hint here. Recommended to also set up a password with the `setPassword()` function.
      * The PIN can only be numbers, the hint can contain words.
      * WARNING: Don't use characters from RTL languages like Hebrew/Arabic, only numbers.
-     * @param pincode - Set your PIN
-     * @param hint - Set a hint for your PIN
-     * @param setFallback - In case you dont remember the pin, you can choose if you want to have a password as a fallback, for when you dont remember your PIN code.
+     * @param pincode Set your PIN
+     * @param hint Set a hint for your PIN
+     * @param setFallback In case you dont remember the pin, you can choose if you want to have a password as a fallback, for when you dont remember your PIN code.
      */
 
-    public function setPINCode(pincode:Int = 1111, pinhint:String = "starts with 1", setFallback:Bool = true)
+    public function setPINCode(pincode:Int = 1111, pinhint:String = "starts with 1", setFallback:Bool = false)
     {
         
         PIN = pincode;
@@ -67,14 +71,16 @@ class AuthMe {
     /**
      * Check if the password inserted is correct.
      * if the password to verify is a PIN, then [verifyAsPIN] should be true
-     * NOTICE: If the password is correct - [correctPasswordCallback()] will be called.
-     *         If its incorrect - [incorrectPasswordCallback()] will be called.
-     * If you want a certine function to be called when the password is correct/incorrect - OVERRIDE THESE FUNCTIONS!
-     * @param insertedpassword - The user-inserted password.
-     * @param verifyAsPIN - if [verifyAsPIN] = [true], then the password verification method will include a fallback to a regular password, and will not accept regular passwords unless the PIN is incorrect.
+     * NOTICE: If the password is correct the function you set for [OnPasswordCorrect()] will be called.
+     *         If its incorrect, the function [OnPasswordIncorrect()] will be called.
+     * @param insertedpassword The user-inserted password.
+     * @param verifyAsPIN if [verifyAsPIN] = [true], then the password verification method will include a fallback to a regular password, and will not accept regular passwords unless the PIN is incorrect.
+     * @param OnPasswordCorrect This function will be called if the password is correct.
+     * @param OnPasswordIncorrect This funcction will be called if the password is incorrect.
+     * @param PasswordFallback This function will be called if the PIN is incorrect, and you want to make it fall-ba
      */
     
-    public function checkPasswords(insertedpassword:String, verifyAsPIN:Bool = false) {
+    public function checkPasswords(insertedpassword:String, verifyAsPIN:Bool = false, ?OnPasswordCorrect:Void->Void, ?OnPasswordIncorrect:Void->Void, ?PasswordFallback:Void->Void) {
 
         if (verifyAsPIN = false)
         {
@@ -82,22 +88,22 @@ class AuthMe {
             {
                 if (insertedpassword == password)
                 {
-                    correctPasswordCallback();
+                    OnPasswordCorrect();
                 }
                 else
                 {
-                    incorrectPasswordCallback();
+                    OnPasswordIncorrect();
                 }
             }
             else if (passwordtype == PasswordTypes.PIN)
             {
                 if (insertedpassword == Std.string(PIN))
                 {
-                    correctPasswordCallback();
+                    OnPasswordCorrect();
                 }
                 else
                 {
-                    incorrectPasswordCallback();
+                    OnPasswordIncorrect();
                 }
             }
         }
@@ -108,28 +114,20 @@ class AuthMe {
             {
                 if (insertedpassword == Std.string(PIN))
                 {
-                    correctPasswordCallback();
+                    OnPasswordCorrect();
                 }
                 else 
                 {
-                     
+                     PasswordFallback();
                 }
             }
         }
         
     
     }
-    public static function passwordFallback() {
-        Sys.println("PIN incorrect! please insert password:");
+    public function passwordFallback() {
+        trace("PIN incorrect! please insert password:");
         
         
-    }
-
-    public static function correctPasswordCallback() {
-        Sys.println("password correct!");
-    }
-
-    public static function incorrectPasswordCallback() {
-        Sys.println("password incorrect!");
     }
 }
