@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- _________________________ Application Settings _________________________ -->
+
+	<app title="MSFramework" file="msf" main="Main" version="1.0.0" company="MSFramework" />
+
+	<!-- _____________________________ Path Settings ____________________________ -->
+
+	<classpath name="src" />
+
+	<!-- _______________________________ Libraries ______________________________ -->
+
+	<haxelib name="flixel" />
+	<haxelib name="flixel-addons" />
+	<haxelib name="flixel-ui"/>
+</project>

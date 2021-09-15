@@ -4,5 +4,10 @@
     "license": "MIT",
     "releasenote": "added PIN support",
     "contributors": ["ShaharMS"],
-    "version": "1.1.0"
+    "version": "1.1.0",
+    "dependencies": {
+        "flixel": "",
+		"flixel-addons": "",
+        "flixel-ui": ""
+    }
 }

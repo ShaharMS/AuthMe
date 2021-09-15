@@ -1,10 +1,4 @@
-package;
-
-
-
-
-
-
+package msf.auth;
 
 /**
  * Used for PIN-protecting.
