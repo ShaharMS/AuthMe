@@ -4,7 +4,7 @@ package msf.auth;
  * Used for PIN-protecting.
  */
 
-class PIN {
+class MsfPIN {
     
     var PIN:Int;
     var PINhint:String;

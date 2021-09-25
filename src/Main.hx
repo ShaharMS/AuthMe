@@ -1,4 +1,5 @@
 package;
+import msf.auth.MsfAuthPopup;
 
 class Main {
     static function main() {
@@ -9,5 +10,6 @@ class Main {
         #else
         trace("MSF Working! Version 1.0.0");
         #end
+        
     }
 }
