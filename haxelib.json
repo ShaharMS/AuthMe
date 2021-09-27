@@ -1,6 +1,6 @@
 {
-    "name": "authme",
-    "classPath": "source",
+    "name": "msf",
+    "classPath": "src",
     "license": "MIT",
     "releasenote": "added PIN support",
     "contributors": ["ShaharMS"],
