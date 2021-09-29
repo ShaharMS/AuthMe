@@ -1,5 +1,4 @@
 package;
-import msf.auth.MsfAuthPopup;
 
 class Main {
     static function main() {

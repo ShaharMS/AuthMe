@@ -9,7 +9,7 @@ import flixel.group.FlxSpriteGroup;
  * Used for password-protecting.
  */
 
-class MsfPassword extends FlxSpriteGroup {
+class FlxPassword extends FlxSpriteGroup {
     
     public var password:String;
     public var passwordhint:String;
@@ -25,7 +25,7 @@ class MsfPassword extends FlxSpriteGroup {
 
     /**
      * Set a password password.
-     * NOTICE: If you are planning to use `MsfAuthPopup`, only fill out the `password` and `hint`.
+     * NOTICE: If you are planning to use `FlxAuthPopup`, only fill out the `password` and `hint`.
      * @param password - Your password.
      * @param hint - Your hint.
      * @param x - location on the screen - X axes.

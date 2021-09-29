@@ -9,7 +9,7 @@ import flixel.group.FlxSpriteGroup;
  * Used for PIN-protecting.
  */
 
-class MsfPIN extends FlxSpriteGroup {
+class FlxPIN extends FlxSpriteGroup {
     
     public var PIN:Int;
     public var PINhint:String;
@@ -25,7 +25,7 @@ class MsfPIN extends FlxSpriteGroup {
 
     /**
      * Set a PIN password.
-     * NOTICE: If you are planning to use `MsfAuthPopup`, only fill out the `PIN` and `hint`.
+     * NOTICE: If you are planning to use `FlxAuthPopup`, only fill out the `PIN` and `hint`.
      * @param PIN - Your PIN password.
      * @param hint - Your hint.
      * @param x - location on the screen - X axes.

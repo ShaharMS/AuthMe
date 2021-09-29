@@ -10,8 +10,8 @@ import flixel.text.FlxText;
 import flixel.addons.ui.FlxInputText;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
-import msf.auth.MsfPassword;
-import msf.auth.MsfPIN;
+import msf.auth.FlxPassword;
+import msf.auth.FlxPIN;
 /**
  * Creates an authentication popup. - `AuthPopup` is a Helper Class - Not a must-have, but makes things simpler.
  * NOTICE: if you fill both `PIN` and `password` feild, the `PIN` will be used.
@@ -20,20 +20,20 @@ import msf.auth.MsfPIN;
  * - **How To Use:** 
  * 
  *      ```haxe
- *      new MsfAuthPopup(() -> new YourState, PIN);
+ *      new FlxAuthPopup(() -> new YourState, PIN);
  *      ```
  * 
  * - **Or** 
  * 
  *      ```haxe
- *      new MsfAuthPopup(() -> new YourState, PASSWORD);
+ *      new FlxAuthPopup(() -> new YourState, PASSWORD);
  *      ```
  */    
-class MsfAuthPopup extends FlxSubState {
+class FlxAuthPopup extends FlxSubState {
     
     var TargetedState:FlxState;
-    var pin:MsfPIN;
-    var password:MsfPassword;
+    var pin:FlxPIN;
+    var password:FlxPassword;
     var authgroup:FlxGroup;
     
     var background:FlxSprite;
@@ -47,13 +47,13 @@ class MsfAuthPopup extends FlxSubState {
      * - **How To Use:** 
      * 
      *      ```haxe
-     *      new MsfAuthPopup(() -> new YourState, PIN);
+     *      new FlxAuthPopup(() -> new YourState, PIN);
      *      ```
      * 
      * - **Or** 
      * 
      *      ```haxe
-     *      new MsfAuthPopup(() -> new YourState, PASSWORD);
+     *      new FlxAuthPopup(() -> new YourState, PASSWORD);
      *      ```
      * 
      * @param YourState your starting Game State - can be your `MenuState` or `PlayState` or whatever
@@ -61,7 +61,7 @@ class MsfAuthPopup extends FlxSubState {
      * @param Password if you want a regular `Password`, only if you want a regular `Password`.
      * 
      */    
-     public function new(TargetedState:() -> FlxState, ?PIN:MsfPIN, ?password:MsfPassword) {
+     public function new(TargetedState:() -> FlxState, ?PIN:FlxPIN, ?password:FlxPassword) {
         super();
         authgroup = new FlxGroup();
         this.pin = PIN;

@@ -15,14 +15,25 @@ import flixel.util.FlxColor;
 class FlxTextButton extends FlxText {
     public var status:Int;
     var OnClick:Void -> Void;
-    
+    public var button:Array<Void -> Void>;
+    private var buttonActive:Bool = true;
 
     public function new(x:Float = 0, y:Float = 0, size:Int = 40, color:Int = FlxColor.WHITE,  text:String = "" ,?font:String = "assets/fonts/OpenSans.ttf", OnClick:Void -> Void) {
         super(x,y);
         this.OnClick = OnClick;
+        button.push(enable);
+        button.push(disable);
         if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased)
             OnClick();
     }
+    public function enable() {
+        buttonActive = true;
+    }
+
+    public function disable() {
+        buttonActive = true;
+    }
+    
     override public function update(elapsed:Float) {
         super.update(elapsed);
         
@@ -42,7 +53,8 @@ class FlxTextButton extends FlxText {
         
         
         if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased)
-            OnClick();
+            if (buttonActive = true)
+                OnClick();
     }
 
 
