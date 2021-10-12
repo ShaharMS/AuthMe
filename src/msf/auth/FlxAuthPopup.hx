@@ -87,20 +87,14 @@ class FlxAuthPopup extends FlxSubState {
         add(authgroup);
         if (pin != null)
         {           
-            authgroup.add(pin);
+            var textbox = new FlxInputText(0,0,600,"",150);
+            textbox.callback = handlePINInput;
+            authgroup.add(textbox);
+            
         }
         else
         {           
             authgroup.add(password);
-        }
-
-        if (pin != null)
-        {
-            pin.screenCenter();
-        }
-        else
-        {
-            password.screenCenter();
         }
 
         super.create();
@@ -113,6 +107,36 @@ class FlxAuthPopup extends FlxSubState {
     function onIncorrect() {
         trace("Incorrect!");
     }
+
+    public function checkPIN(insertedPIN:Int) {
+        if (insertedPIN == pin.PIN)
+            onCorrect();
+        else 
+            onIncorrect();
+    }
+
+    public function checkPass(insertedPass:String) {
+        if (insertedPass == password.password)
+            onCorrect();
+        else 
+            onIncorrect();
+    }
+
+    function handlePINInput(text:String, action:String)
+    {
+        if (action == FlxInputText.ENTER_ACTION)
+        {
+            checkPIN(Std.parseInt(text));
+        }
+    }
+
+    function handlePassInput(text:String, action:String)
+        {
+            if (action == FlxInputText.ENTER_ACTION)
+            {
+                checkPass(text);
+            }
+        }
 
     override public function update(elapsed:Float) {
         super.update(elapsed);
