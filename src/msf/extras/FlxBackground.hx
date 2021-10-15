@@ -15,8 +15,9 @@ class FlxBackground extends FlxSprite {
      */
     public function new(color:Int = FlxColor.BLACK, ?x:Float = 0, ?y:Float = 0) {
         
-        makeGraphic(FlxG.width, FlxG.height, color);
         super(x, y);
+        makeGraphic(FlxG.width, FlxG.height, color);
+        
     }
 
     /**
