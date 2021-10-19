@@ -2,9 +2,9 @@
     "name": "msf",
     "classPath": "src",
     "license": "MIT",
-    "releasenote": "added PIN support",
+    "releasenote": "added FlxResizeUtil, working on FlxInputTextRTL",
     "contributors": ["ShaharMS"],
-    "version": "1.1.0",
+    "version": "1.2.1",
     "dependencies": {
         "flixel": "",
 		"flixel-addons": "",
