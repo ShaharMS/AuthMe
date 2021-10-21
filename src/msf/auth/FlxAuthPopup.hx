@@ -66,8 +66,6 @@ class FlxAuthPopup extends FlxSubState {
         authgroup = new FlxGroup();
         this.pin = PIN;
         this.password = password;
-        
-
     }
 
     override public function create() {

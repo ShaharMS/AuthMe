@@ -12,7 +12,7 @@ class FlxResizeUtil {
     public var oldWidth(never, default):Int;
 	public var oldHeight(never, default):Int; 
 
-    public static function resizeText(text:FlxText):Int {
+    public static function resizeText(text:Dynamic):Int {
       
         
         while (text.width > FlxG.width)
