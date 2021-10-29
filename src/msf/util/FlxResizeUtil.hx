@@ -12,7 +12,7 @@ class FlxResizeUtil {
     public var oldWidth(never, default):Int;
 	public var oldHeight(never, default):Int; 
 
-    public static function resizeText(text:Dynamic):Int {
+    public static function resizeText(text:FlxText, sizeOffset:Int = 0):Int {
       
         
         while (text.width > FlxG.width)
@@ -25,7 +25,7 @@ class FlxResizeUtil {
 		{
 			text.size += 1;
 		}
-        
+        text.size += sizeOffset;
         text.updateHitbox();
         trace('the current size is ' + text.size);
 
