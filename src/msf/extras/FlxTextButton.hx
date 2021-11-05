@@ -1,5 +1,6 @@
 package msf.extras;
 
+import msf.util.FlxUrlUtil;
 import flixel.ui.FlxButton;
 import flixel.FlxG;
 import flixel.text.FlxText;

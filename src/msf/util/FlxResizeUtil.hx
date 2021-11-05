@@ -1,9 +1,6 @@
 package msf.util;
 
 import flixel.FlxSprite;
-import flixel.FlxObject;
-import openfl.events.Event;
-import flixel.math.FlxPoint;
 import flixel.FlxG;
 import flixel.text.FlxText;
 
