@@ -26,20 +26,25 @@ class FlxInputTextRTL extends FlxText {
 
     public var borderThickness(default, set):Int = 1;
 
-    private var bg:FlxSprite;
+    private var bg:FlxEffectSprite;
     
     private var outline:FlxOutlineEffect;
 
-    private var background:FlxEffectSprite;
+    public var background:FlxSprite;
     
-    public function new(x:Float = 0, y:Float = 0, width:Int = 200, height:Int = 50, size:Int = 40, ?Text:String = "",backgroundcolor:FlxColor = FlxColor.WHITE, bordercolor:FlxColor = FlxColor.BLACK) {
-        bg = new FlxSprite(x,y).makeGraphic(width, height, backgroundcolor);
-        outline = new FlxOutlineEffect(FlxOutlineMode.PIXEL_BY_PIXEL, bordercolor, borderThickness);
-        background = new FlxEffectSprite(bg, [outline]);
-        FlxG.state.add(background);
+    public function new(x:Float = 0, y:Float = 0, width:Int = 200, size:Int = 40, ?Text:String = "",backgroundcolor:FlxColor = FlxColor.WHITE, bordercolor:FlxColor = FlxColor.BLACK) {
+        
         super(x,y,0,Text, size);
+
+        background = new FlxSprite(super.width, super.height);
+
+        outline = new FlxOutlineEffect(FlxOutlineMode.PIXEL_BY_PIXEL, bordercolor, borderThickness);
+
+        
+
+        bg = new FlxEffectSprite(this, [outline]);
         this.alignment = FlxTextAlign.RIGHT;
-        caret = new Caret(this);
+        //caret = new Caret(this);
     }
 
     
