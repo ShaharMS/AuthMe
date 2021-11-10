@@ -13,10 +13,11 @@ class FlxBackground extends FlxSprite {
      * create a new background `FlxSprite`
      * @param color the color of the background
      */
-    public function new(color:Int = FlxColor.BLACK, ?x:Float = 0, ?y:Float = 0) {
+    public function new(color:Int = FlxColor.BLACK, alpha:Float = 1, ?x:Float = 0, ?y:Float = 0) {
         
         super(x, y);
         makeGraphic(FlxG.width, FlxG.height, color);
+        super.alpha = alpha;
         
     }
 

@@ -1,68 +1,82 @@
 package msf.extras;
 
-import flixel.input.keyboard.FlxKey;
-import openfl.events.Event;
-import flixel.addons.effects.chainable.IFlxEffect;
+import flixel.util.FlxStringUtil;
+import openfl.events.KeyboardEvent;
 import flixel.FlxG;
-import flixel.addons.text.FlxTypeText;
-import flixel.addons.effects.chainable.FlxEffectSprite;
-import flixel.addons.effects.chainable.FlxOutlineEffect;
-import flixel.addons.ui.FlxInputText;
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 /**
  * FlxInputText with support for RTL languages.
  */
-
 class FlxInputTextRTL extends FlxText {
-
 
     /**
      * the caret displayed at the end of the text.
      */
     public var caret(default, default):Caret;
 
-    public var borderThickness(default, set):Int = 1;
-
-    private var bg:FlxEffectSprite;
+    private var bg:FlxSprite;
     
-    private var outline:FlxOutlineEffect;
-
-    public var background:FlxSprite;
+    private var ol:FlxSprite;
+    /**
+     * creates a new RTL `FlxInputText`.
+     * @param x The X position of this object in world space
+     * @param y The X position of this object in world space
+     * @param width The width of this `FlxInputTextRTL`
+     * @param height **DEPRECATED** - at least for now.
+     * @param size The test's size
+     * @param Text The text you want to display initially - if you want to
+     * @param backgroundcolor The background's color
+     * @param bordercolor The outline's color
+     * 
+     * @since 1.1.2
+     */
     
-    public function new(x:Float = 0, y:Float = 0, width:Int = 200, size:Int = 40, ?Text:String = "",backgroundcolor:FlxColor = FlxColor.WHITE, bordercolor:FlxColor = FlxColor.BLACK) {
-        
+    public function new(x:Float = 0, y:Float = 0, width:Int = 200, height:Int = 50, size:Int = 40, ?Text:String = "",backgroundcolor:FlxColor = FlxColor.WHITE, bordercolor:FlxColor = FlxColor.BLACK) {
+        bg = new FlxSprite(x,y).makeGraphic(width, Math.ceil(super.height), backgroundcolor);
         super(x,y,0,Text, size);
 
-        background = new FlxSprite(super.width, super.height);
-
-        outline = new FlxOutlineEffect(FlxOutlineMode.PIXEL_BY_PIXEL, bordercolor, borderThickness);
-
-        
-
-        bg = new FlxEffectSprite(this, [outline]);
         this.alignment = FlxTextAlign.RIGHT;
-        //caret = new Caret(this);
+        caret = new Caret(this);
+
+        FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+        
     }
 
-    
-    function set_borderThickness(borderThickness:Int):Int {
-        this.borderThickness = borderThickness;
-        outline.thickness = borderThickness;
-        return borderThickness;
+    function onKeyDown(key:KeyboardEvent) {
+        switch key.charCode {
+            case 16, 17, 27, 220, 35, 36, 37, 39, 46: return;
+        }
     }
 
+    /**
+	 * Inserts a substring into a string at a specific index
+	 *
+	 * @param	Original    The string to have something inserted into
+	 * @param	Insert		The string to insert
+	 * @param	Index		The index to insert at
+	 * @return				Returns the joined string for chaining.
+	 */
+	private function insertSubstring(Original:String, Insert:String, Index:Int):String
+        {
+            if (Index != Original.length)
+            {
+                Original = Original.substring(0, Index) + (Insert) + (Original.substring(Index));
+            }
+            else
+            {
+                Original = Original + (Insert);
+            }
+            return Original;
+        }
 }
 
 private class Caret extends FlxSprite
 {
     public var offsetX(default, set):Int = 0;
 
-    public var offsetY(default, set):Int = 0;
-    
-    
+    public var index:Int;
     
     var Text:FlxInputTextRTL;
     public function new(Text:FlxInputTextRTL) {
@@ -71,21 +85,8 @@ private class Caret extends FlxSprite
         makeGraphic(2, Math.floor(Text.height - 8), FlxColor.BLACK);
     }
 
-    override public function update(elapsed:Float) {
-        super.update(elapsed);
-        if (FlxG.keys.justReleased.ANY)
-        {
-            this.x = Text.fieldWidth + offsetX;
-            this.y = Text.y + Text.height / 2 - this.height / 2;
-        }
-        
-    }
-
     function set_offsetX(offsetX:Int):Int {
         return offsetX;
     }
       
-    function set_offsetY(offsetY:Int):Int {
-        return offsetY;
-    }
 }
