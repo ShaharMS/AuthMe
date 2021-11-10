@@ -1,2 +1,3 @@
-# myHaxelibs
-hope itll work!
+# msf
+
+A Library Containing Utilities And Other Usefull Classes
