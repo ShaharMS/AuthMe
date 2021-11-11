@@ -86,7 +86,7 @@ class FlxUrlUtil {
     {
         init();
         var prefix:String = "";
-        if(!~/^file?:\/\/\//.match(path))
+        if(!~/^file:?\/\/\//.match(path))
         {
             prefix = "file:///";
             path = prefix + path;
