@@ -3,6 +3,6 @@ package msf.physix;
 /**
  * Circle Object Effected By `FlxPhysixEngine`. can bounce, roll and be thrown.
  */
-class FlxBall {
+class FlxBall extends FlxPhysixEngine {
     
 }
