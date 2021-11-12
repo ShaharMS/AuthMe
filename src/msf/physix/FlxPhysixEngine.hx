@@ -1,5 +1,6 @@
 package msf.physix;
 
+import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.group.FlxGroup;
 import flixel.FlxObject;
 
@@ -30,10 +31,30 @@ enum PhysixSpriteType {
 /**
  * Math And gravity Based Physics Engine, used by `FlxBall` and more
  */
-class FlxPhysixEngine {
+class FlxPhysixEngine implements IFlxDestroyable{
     
+    /**
+     * The gravity applied to the objects inside this engine.
+     * gravity's value will determine the speed in which objects fall/float.
+     * 
+     * #### if `gravity > 0` - the objects will fall.
+     * 
+     * #### if `gravity < 0` - the objects will float.
+     * 
+     * #### if `gravity = 0` - the objects will remain in place.
+     */
     public var gravity(default, set):Float;
 
+    /**
+     * The pull applied to the objects inside this engine.
+     * pull's value will determine the speed in which objects accelerate sideways.
+     * 
+     * #### if `pullForce > 0` - the objects will accelerate to the right.
+     *      
+     * #### if `pullForce < 0` - the objects will accelerate to the left.
+     *      
+     * #### if `pullForce = 0` - the objects will remain in place.
+     */
     public var pullForce(default, set):Float;
 
     public var effectedObjects:FlxGroup;
@@ -83,6 +104,8 @@ class FlxPhysixEngine {
         regularObjects.add(object);
         object.acceleration.y = gravity * density / 1;
         object.acceleration.x = pullForce * density / 1;
+        object.maxVelocity.y = gravity * density / 1 + (gravity * density / 1) / 4;
+        object.maxVelocity.x = pullForce * density / 1 + (pullForce * density / 1) / 4;
         return object;
     }
 
@@ -148,5 +171,9 @@ class FlxPhysixEngine {
         enginePositionStats.height  = positionStats.height;
         return positionStats;  
 	}
+
+	public function destroy() {
+
+    }
 }
 
