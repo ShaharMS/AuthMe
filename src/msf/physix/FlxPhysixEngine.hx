@@ -54,13 +54,15 @@ class FlxPhysixEngine {
 
     var pastArea:PhysixArea;
 
-    
+    @:noCompletion public static function initGlobalEngine() {
+        if (globalEngine == null) globalEngine = new FlxPhysixEngine(600, 0, PhysixArea.REGULAR);
+    }
     /**
      * Adds a new physics "playground". has a gravity, pull, area and positionStats feilds.
      * 
-     * **Warning** - 
+     * #### **NOTICE:** 
+     * Right now only supports the REGULAR `PhysixArea`. Other types will do nothing
      * 
-     *   Right now only supports the REGULAR `PhysixArea`. Other types will do nothing
      * @param gravity acceleration towards the ground - positive value will make objects fall, negative values will make objects float
      * @param pullForce acceleration towards the sides - positive values willmake objects go right, and vice-versa.
      * @param area The effects that apply on the included objects that are handled by the engine

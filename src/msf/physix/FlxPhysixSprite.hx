@@ -39,7 +39,8 @@ class FlxPhysixSprite extends FlxSprite {
     }
 
     public function addPhysix(?physixEngine:FlxPhysixEngine, density:Float = 1, bounce:Float = 0, type:PhysixSpriteType = OBJECT) {
-        if (physixEngine == null) physixEngine = globalEngine != null ? globalEngine : new FlxPhysixEngine(600,0,PhysixArea.REGULAR);
+        FlxPhysixEngine.initGlobalEngine();
+        if (physixEngine == null) this.physixEngine = globalEngine else this.physixEngine = physixEngine;
         if (type == FLOOR) 
         {
             physixEngine.addFloor(this);

@@ -9,7 +9,7 @@ import msf.physix.FlxPhysixEngine.globalEngine;
 /**
  * Circle Object Effected By `FlxPhysixEngine`. can bounce, roll and be thrown.
  */
-class FlxBall extends FlxPhysixSprite {
+class FlxPhysixBall extends FlxPhysixSprite {
     
     public function new(?physixEngine:FlxPhysixEngine, X:Float = 0, Y:Float = 0, radius:Int = 100, density:Float = 1, type:PhysixSpriteType) {
         super(X, Y);      
@@ -18,7 +18,7 @@ class FlxBall extends FlxPhysixSprite {
         if (type == OBJECT) super.physixEngine.addObject(this, density) else super.physixEngine.addFloor(this);
     }
 
-    public function drawBall(color:Int, linestyle:LineStyle, drawstyle:DrawStyle):FlxBall {
+    public function drawBall(color:Int, linestyle:LineStyle, drawstyle:DrawStyle):FlxPhysixBall {
 
 
         return this;

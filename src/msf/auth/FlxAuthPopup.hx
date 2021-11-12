@@ -82,7 +82,6 @@ class FlxAuthPopup extends FlxSubState {
         title.bold = true;
         title.color = FlxColor.WHITE;
         add(title);
-        add(authgroup);
         if (pin != null)
         {           
             var textbox = new FlxInputText(0,0,600,"",150);
@@ -94,7 +93,7 @@ class FlxAuthPopup extends FlxSubState {
         {           
             authgroup.add(password);
         }
-
+        add(authgroup);
         super.create();
     }
 
