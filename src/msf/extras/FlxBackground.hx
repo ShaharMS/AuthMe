@@ -9,15 +9,17 @@ import flixel.FlxSprite;
  */
 class FlxBackground extends FlxSprite {
     
+    var Color:FlxColor;
     /**
      * create a new background `FlxSprite`
      * @param color the color of the background
      */
-    public function new(color:Int = FlxColor.BLACK, alpha:Float = 1, ?x:Float = 0, ?y:Float = 0) {
+    public function new(Color:Int = FlxColor.BLACK, alpha:Float = 1, ?x:Float = 0, ?y:Float = 0) {
         
         super(x, y);
-        makeGraphic(FlxG.width, FlxG.height, color);
+        makeGraphic(FlxG.width, FlxG.height, Color);
         super.alpha = alpha;
+        this.Color = Color;
         
     }
 
@@ -25,7 +27,7 @@ class FlxBackground extends FlxSprite {
      * Self-explanatory, call after a window/stage resize.
      */
     public function resizeToStageSize() {
-        makeGraphic(FlxG.width, FlxG.height, color);
+        makeGraphic(FlxG.width, FlxG.height, Color);
     }
         
 
