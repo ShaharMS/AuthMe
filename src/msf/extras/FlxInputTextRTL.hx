@@ -1,92 +1,96 @@
 package msf.extras;
 
-import flixel.util.FlxStringUtil;
+import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxColor;
-import flixel.text.FlxText;
 /**
  * FlxInputText with support for RTL languages.
  */
-class FlxInputTextRTL extends FlxText {
-
-    /**
-     * the caret displayed at the end of the text.
-     */
-    public var caret(default, default):Caret;
-
-    private var bg:FlxSprite;
-    
-    private var ol:FlxSprite;
-    /**
-     * creates a new RTL `FlxInputText`.
-     * @param x The X position of this object in world space
-     * @param y The X position of this object in world space
-     * @param width The width of this `FlxInputTextRTL`
-     * @param height **DEPRECATED** - at least for now.
-     * @param size The test's size
-     * @param Text The text you want to display initially - if you want to
-     * @param backgroundcolor The background's color
-     * @param bordercolor The outline's color
-     * 
-     * @since 1.1.2
-     */
-    
-    public function new(x:Float = 0, y:Float = 0, width:Int = 200, height:Int = 50, size:Int = 40, ?Text:String = "",backgroundcolor:FlxColor = FlxColor.WHITE, bordercolor:FlxColor = FlxColor.BLACK) {
-        bg = new FlxSprite(x,y).makeGraphic(width, Math.ceil(super.height), backgroundcolor);
-        super(x,y,0,Text, size);
-
-        this.alignment = FlxTextAlign.RIGHT;
-        caret = new Caret(this);
-
-        FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-        
-    }
-
-    function onKeyDown(key:KeyboardEvent) {
-        switch key.charCode {
-            case 16, 17, 27, 220, 35, 36, 37, 39, 46: return;
-        }
-    }
-
-    /**
-	 * Inserts a substring into a string at a specific index
-	 *
-	 * @param	Original    The string to have something inserted into
-	 * @param	Insert		The string to insert
-	 * @param	Index		The index to insert at
-	 * @return				Returns the joined string for chaining.
-	 */
-	private function insertSubstring(Original:String, Insert:String, Index:Int):String
-        {
-            if (Index != Original.length)
-            {
-                Original = Original.substring(0, Index) + (Insert) + (Original.substring(Index));
-            }
-            else
-            {
-                Original = Original + (Insert);
-            }
-            return Original;
-        }
-}
-
-private class Caret extends FlxSprite
+class FlxInputTextRTL extends FlxInputText 
 {
-    public var offsetX(default, set):Int = 0;
+	public function pressSpace()
+	{
+		caretIndex = text.length;
+		text = insertSubstring(text, " ", caretIndex);
+		trace("spacepress");
+	}
 
-    public var index:Int;
-    
-    var Text:FlxInputTextRTL;
-    public function new(Text:FlxInputTextRTL) {
-        super();
-        this.Text = Text;
-        makeGraphic(2, Math.floor(Text.height - 8), FlxColor.BLACK);
-    }
+	public function pressPeriod()
+	{
+		caretIndex = text.length;
+		text = insertSubstring(text, ".", caretIndex);
+		trace("periodpress");
+	}
 
-    function set_offsetX(offsetX:Int):Int {
-        return offsetX;
-    }
-      
+	public function pressQMark()
+	{
+		caretIndex = text.length;
+		text = insertSubstring(text, "?", caretIndex);
+		trace("periodpress");
+	}
+
+	public function pressComma()
+	{
+		caretIndex = text.length;
+		text = insertSubstring(text, ",", caretIndex);
+		trace("periodpress");
+	}
+
+	public function pressFSlash()
+	{
+		caretIndex = text.length;
+		text = insertSubstring(text, "/", caretIndex);
+		trace("periodpress");
+	}
+
+	public function pressBSlash()
+	{
+		caretIndex = text.length;
+		text = insertSubstring(text, '"\"', caretIndex);
+		trace("periodpress");
+	}
+	
+	override function onKeyDown(e:KeyboardEvent)
+	{
+		// most of this is from the overriden void but the actual char code entry is altered
+		var key:Int = e.keyCode;
+
+		
+		
+		if (hasFocus)
+		{
+			var overridenString = mapCharCode(e.charCode);
+			if (overridenString == null)
+			{
+				// not mapped, do default handling
+				super.onKeyDown(e);
+			}
+			else
+			{
+				var newText:String = overridenString;			
+
+				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength))
+				{
+					text = insertSubstring(text, newText, caretIndex);
+					caretIndex++;
+					onChange(FlxInputText.INPUT_ACTION);
+				}
+			}
+		}
+	}
+
+	var charMap:Map<Int, String> = [
+		113 => "/", 119 => "'", 101 => "ק", 114 => "ר", 116 => "א", 121 => "ט", 117 => "ו", 105 => "ן", 111 => "ם", 112 => "פ", 97 => "ש", 115 => "ד",
+		100 => "ג", 103 => "ע", 104 => "י", 106 => "ח", 107 => "ל", 108 => "ך", 59 => "ף", 122 => "ז", 120 => "ס", 99 => "ב", 118 => "ה",
+		98 => "נ", 110 => "מ", 109 => "צ", 44 => "ת", 46 => "ץ", 102 => "כ", 32 => "_", 47 => "", 39 => "", 63 => ""
+	];
+
+
+
+
+
+	function mapCharCode(charCode:Int):String
+	{
+		trace('trying to map ${charCode}');
+		return charMap[charCode];
+	}
 }

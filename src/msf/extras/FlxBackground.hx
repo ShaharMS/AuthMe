@@ -12,7 +12,10 @@ class FlxBackground extends FlxSprite {
     var Color:FlxColor;
     /**
      * create a new background `FlxSprite`
-     * @param color the color of the background
+     * @param Color the color of the background
+     * @param alpha the background's transparency
+     * @param x this background's X position
+     * @param y this background's Y position
      */
     public function new(Color:Int = FlxColor.BLACK, alpha:Float = 1, ?x:Float = 0, ?y:Float = 0) {
         
