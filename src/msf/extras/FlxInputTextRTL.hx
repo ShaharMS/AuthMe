@@ -36,6 +36,7 @@ class FlxInputTextRTL extends FlxInputText
 		trace("periodpress");
 	}
 	
+	
 	override function onKeyDown(e:KeyboardEvent) {
 		// most of this is from the overriden void but the actual char code entry is altered
 		var key:Int = e.keyCode;
