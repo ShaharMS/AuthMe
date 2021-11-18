@@ -7,7 +7,6 @@ import flixel.FlxG;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxSprite;
 
-import msf.physix.FlxPhysixEngine.globalEngine;
 import msf.physix.FlxPhysixEngine.PhysixArea;
 import msf.physix.FlxPhysixEngine.PhysixSpriteType;
 
@@ -39,8 +38,7 @@ class FlxPhysixSprite extends FlxSprite {
     }
 
     public function addPhysix(?physixEngine:FlxPhysixEngine, density:Float = 1, bounce:Float = 0, type:PhysixSpriteType = OBJECT) {
-        FlxPhysixEngine.initGlobalEngine();
-        if (physixEngine == null) this.physixEngine = globalEngine else this.physixEngine = physixEngine;
+        if (physixEngine == null) physixEngine = new FlxPhysixEngine(600, 0, PhysixArea.REGULAR);
         if (type == FLOOR) 
         {
             physixEngine.addFloor(this);
@@ -51,6 +49,8 @@ class FlxPhysixSprite extends FlxSprite {
             physixEngine.addObject(this, density);
             this.type = OBJECT;
         }
+
+        this.physixEngine = physixEngine;
     }
 
     public function removePhysix(stopCurrentMotion:Bool = true) {

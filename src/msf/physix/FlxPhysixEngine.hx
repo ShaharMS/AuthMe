@@ -5,7 +5,7 @@ import flixel.group.FlxGroup;
 import flixel.FlxObject;
 
 
-abstract PhysixArea(Int) from Int from UInt to Int to UInt
+abstract FlxPhysixArea(Int) from Int from UInt to Int to UInt
 {
     public static inline var REGULAR:Int = 1;
     public static inline var WATER:Int = 2;
@@ -63,21 +63,16 @@ class FlxPhysixEngine implements IFlxDestroyable{
 
     public var regularObjects(default, default):FlxGroup;
 
-    public var area(default, set):PhysixArea;
+    public var area(default, set):FlxPhysixArea;
 
     public var enginePositionStats(default, set):PhysixEnginePosStats;
-
-    public static var globalEngine:FlxPhysixEngine;
 
     var pastGravity:Float;
 
     var pastPullForce:Float;
 
-    var pastArea:PhysixArea;
+    var pastArea:FlxPhysixArea;
 
-    @:noCompletion public static function initGlobalEngine() {
-        if (globalEngine == null) globalEngine = new FlxPhysixEngine(600, 0, PhysixArea.REGULAR);
-    }
     /**
      * Adds a new physics "playground". has a gravity, pull, area and positionStats feilds.
      * 
@@ -89,7 +84,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * @param area The effects that apply on the included objects that are handled by the engine
      * @param positionStats Set this if you want the engine's effects to e applied only in certine regions.
      */
-    public function new(gravity:Float, pullForce:Float, area:PhysixArea, ?positionStats:PhysixEnginePosStats) {
+    public function new(gravity:Float, pullForce:Float, area:FlxPhysixArea, ?positionStats:PhysixEnginePosStats) {
         effectedObjects = new FlxGroup();
         floorObjects = new FlxGroup();
         regularObjects = new FlxGroup();
@@ -131,7 +126,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
         floorObjects.remove(object);
     }	
 
-    public function setEngineVariables(gravity:Float, pullForce:Float, area:PhysixArea, ?positionStats:PhysixEnginePosStats) {
+    public function setEngineVariables(gravity:Float, pullForce:Float, area:FlxPhysixArea, ?positionStats:PhysixEnginePosStats) {
         this.gravity = gravity;
         this.pullForce = pullForce;
         this.area = area;
@@ -160,7 +155,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
         return pullForce;
 	}
 
-	function set_area(area:PhysixArea):PhysixArea {
+	function set_area(area:FlxPhysixArea):FlxPhysixArea {
 		return area;
 	}
 
