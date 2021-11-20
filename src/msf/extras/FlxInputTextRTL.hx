@@ -1,39 +1,62 @@
 package msf.extras;
 
+import msf.util.FlxStringCodeIterator;
+import flixel.text.FlxText.FlxTextAlign;
 import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;
+import flixel.util.FlxColor;
 import flixel.FlxG;
 /**
  * FlxInputText with support for RTL languages.
  */
 class FlxInputTextRTL extends FlxInputText 
 {
-	public function pressSpace()
+
+	/**
+	 * @param	X				The X position of the text.
+	 * @param	Y				The Y position of the text.
+	 * @param	Width			The width of the text object (height is determined automatically).
+	 * @param	Text			The actual text you would like to display initially.
+	 * @param   size			Initial size of the font
+	 * @param	TextColor		The color of the text
+	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
+	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
+	 */
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
+		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
+		alignment = FlxTextAlign.RIGHT;
+		this.fieldBorderSprite.visible = false;
+	}
+	final function pressSpace()
 	{
-		caretIndex = text.length;
 		text = insertSubstring(text, " ", caretIndex);
-		trace("spacepress");
 	}
 
-	public function pressPeriod()
+	final function pressPeriod()
 	{
-		caretIndex = text.length;
 		text = insertSubstring(text, ".", caretIndex);
-		trace("periodpress");
 	}
 
-	public function pressQMark()
+	final function pressQMark()
 	{
-		caretIndex = text.length;
 		text = insertSubstring(text, "?", caretIndex);
-		trace("periodpress");
 	}
 
-	public function pressComma()
+	final function pressComma()
 	{
-		caretIndex = text.length;
 		text = insertSubstring(text, ",", caretIndex);
-		trace("periodpress");
+	}
+
+	final function pressBackSpace() {
+		var newText = new FlxStringCodeIterator(text);
+		var count = -1;
+		for (i in newText) {
+			if (count != caretIndex - 1) {
+				newText.addChar();
+			}
+			count++;
+		}
+		text = newText.toString();
 	}
 	
 	
@@ -41,24 +64,23 @@ class FlxInputTextRTL extends FlxInputText
 		// most of this is from the overriden void but the actual char code entry is altered
 		var key:Int = e.keyCode;
 
-		if (hasFocus) {
+		if (hasFocus) 
+		{
 			var overridenString = mapCharCode(e.charCode);
-			if (overridenString == null) {
+			if (overridenString == null) 
+			{
 				// not mapped, do default handling
 				super.onKeyDown(e);
-			} else {
+			} 
+			
+			else 
+			{
 				var newText:String = overridenString;
 
-				// if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength))
-				// {
-				//	text = insertSubstring(text, newText, text.length - caretIndex);
-				//	caretIndex--;
-				//	onChange(FlxInputText.INPUT_ACTION);
-				// }
 
 				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {
 					text = insertSubstring(text, newText, caretIndex);
-					caretIndex--;
+					caretIndex = 0;
 					onChange(FlxInputText.INPUT_ACTION);
 				}
 			}
@@ -126,6 +148,10 @@ class FlxInputTextRTL extends FlxInputText
 
 			if (FlxG.keys.justPressed.QUOTE) {
 				pressComma();
+			}
+
+			if (FlxG.keys.justPressed.BACKSPACE) {
+				pressBackSpace();
 			}
 		}
 	}

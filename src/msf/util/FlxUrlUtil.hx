@@ -95,7 +95,7 @@ class FlxUrlUtil {
             path.remove('https://');
 
         #if desktop
-		openFile(url);
+		//openFile(url);
 		#elseif (js && html5)
 		Browser.window.open(path, "_blank");
 		#elseif flash

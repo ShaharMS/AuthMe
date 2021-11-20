@@ -21,10 +21,10 @@ class FlxTextButton extends FlxText {
     public function new(x:Float = 0, y:Float = 0, size:Int = 40, color:Int = FlxColor.WHITE,  text:String = "" ,?font:String = "assets/fonts/OpenSans.ttf", OnClick:Void -> Void) {
         super(x,y);
         this.OnClick = OnClick;
-        this.color = color;
-        this.size = size;
-        this.text = text;
-        this.font = font;
+        super.color = color;
+        super.size = size;
+        super.text = text;
+        super.font = font;
         
     }
     public function enable() {
