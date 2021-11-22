@@ -13,7 +13,7 @@ import flixel.FlxG;
 class FlxInputTextRTL extends FlxInputText 
 {
 
-	var extraUtils:ExtraUtils;
+	public var extraUtils:ExtraUtils;
 
 	/**
 	 * @param	X				The X position of the text.
@@ -28,12 +28,9 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		alignment = FlxTextAlign.RIGHT;
-		this.fieldBorderSprite.visible = false;
+		extraUtils = new ExtraUtils(this);
 	}
 
-	public function addBorder() {
-		this.fieldBorderSprite.visible = true;
-	}
 	final function pressSpace()
 	{
 		text = insertSubstring(text, " ", caretIndex);
@@ -186,14 +183,22 @@ class FlxInputTextRTL extends FlxInputText
 	}
 }
 
-private class ExtraUtils extends FlxBasic {
+private final class ExtraUtils extends FlxBasic {
 
-	var textRTL:FlxInputTextRTL
+	var textRTL:FlxInputTextRTL;
 
 	public var backgroundVisible(default, set):Bool;
 	
 	function set_backgroundVisible(backgroundVisible:Bool):Bool {
-		
+		textRTL.backgroundColor = FlxColor.TRANSPARENT;
+		return backgroundVisible;
+	}
+
+	public var borderVisible(default, set):Bool;
+
+	function set_borderVisible(borderVisible:Bool):Bool {
+		textRTL.fieldBorderColor = FlxColor.TRANSPARENT;
+		return borderVisible;
 	}
 
 	public function new(inputText:FlxInputTextRTL) {
