@@ -1,5 +1,6 @@
 package msf.extras;
 
+import flixel.FlxBasic;
 import msf.util.FlxStringCodeIterator;
 import flixel.text.FlxText.FlxTextAlign;
 import flixel.addons.ui.FlxInputText;
@@ -11,6 +12,8 @@ import flixel.FlxG;
  */
 class FlxInputTextRTL extends FlxInputText 
 {
+
+	var extraUtils:ExtraUtils;
 
 	/**
 	 * @param	X				The X position of the text.
@@ -181,4 +184,22 @@ class FlxInputTextRTL extends FlxInputText
 			}
 		}
 	}
+}
+
+private class ExtraUtils extends FlxBasic {
+
+	var textRTL:FlxInputTextRTL
+
+	public var backgroundVisible(default, set):Bool;
+	
+	function set_backgroundVisible(backgroundVisible:Bool):Bool {
+		
+	}
+
+	public function new(inputText:FlxInputTextRTL) {
+		super();
+		this.textRTL = inputText;
+		
+	}
+
 }
