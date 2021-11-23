@@ -50,18 +50,6 @@ class FlxInputTextRTL extends FlxInputText
 	{
 		text = insertSubstring(text, ",", caretIndex);
 	}
-
-	final function pressBackSpace() {
-		var newText = new FlxStringCodeIterator(text);
-		var count = -1;
-		for (i in newText) {
-			if (count != caretIndex - 1) {
-				newText.addChar();
-			}
-			count++;
-		}
-		text = newText.toString();
-	}
 	
 	
 	override function onKeyDown(e:KeyboardEvent) {
