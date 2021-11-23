@@ -29,6 +29,7 @@ class FlxInputTextRTL extends FlxInputText
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		alignment = FlxTextAlign.RIGHT;
 		extraUtils = new ExtraUtils(this);
+
 	}
 
 	final function pressSpace()
@@ -51,6 +52,26 @@ class FlxInputTextRTL extends FlxInputText
 		text = insertSubstring(text, ",", caretIndex);
 	}
 	
+	override function set_hasFocus(newFocus:Bool):Bool {
+		if (newFocus) {
+			if (hasFocus != newFocus) {
+				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
+				caret.visible = true;
+				caretIndex = 0;
+			}
+		} else {
+			// Graphics
+			caret.visible = false;
+			if (_caretTimer != null) {
+				_caretTimer.cancel();
+			}
+		}
+
+		if (newFocus != hasFocus) {
+			calcFrame();
+		}
+		return hasFocus = newFocus;
+	}
 	
 	override function onKeyDown(e:KeyboardEvent) {
 		// some of this is from the overriden void but the actual char code entry is altered
