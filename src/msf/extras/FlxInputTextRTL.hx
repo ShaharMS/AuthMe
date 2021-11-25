@@ -153,20 +153,23 @@ class FlxInputTextRTL extends FlxInputText
 		98 => "נ",
 		110 => "מ",
 		109 => "צ",
-		44 => "ת",
-		46 => "ץ",
+		60 => '>',
+		62 => "<",
+		44 => "ץ",
+		46 => "ת",
 		102 => "כ",
 		32 => "",
-		47 => "",
-		39 => "",
-		63 => ""
+		47 => ".",
+		63 => "?",
+		39 => ",",
+		96 => ";",
 	];
 
 
 
 	function mapCharCode(charCode:Int):String
 	{
-		trace('trying to map ${charCode}');
+		trace('trying to map $charCode');
 		return charMap[charCode];
 	}
 
@@ -175,18 +178,6 @@ class FlxInputTextRTL extends FlxInputText
 		if (hasFocus) {
 			if (FlxG.keys.justPressed.SPACE) {
 				pressSpace();
-			}
-
-			if (FlxG.keys.justPressed.SLASH && FlxG.keys.pressed.SHIFT) {
-				pressQMark();
-			}
-
-			if (FlxG.keys.justPressed.SLASH && !FlxG.keys.pressed.SHIFT) {
-				pressPeriod();
-			}
-
-			if (FlxG.keys.justPressed.QUOTE) {
-				pressComma();
 			}
 		}
 	}
