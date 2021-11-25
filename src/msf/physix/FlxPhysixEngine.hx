@@ -1,5 +1,6 @@
 package msf.physix;
 
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.group.FlxGroup;
 import flixel.FlxObject;
@@ -15,13 +16,13 @@ abstract FlxPhysixArea(Int) from Int from UInt to Int to UInt
 
 typedef PhysixEnginePosStats = {
 
-    @:optional public var x:Float;
+    @:optional public var x:Null<Float>;
 
-    @:optional public var y:Float;
+    @:optional public var y:Null<Float>;
 
-    @:optional public var width:Int;
+    @:optional public var width:Null<Int>;
 
-    @:optional public var height:Int;
+    @:optional public var height:Null<Int>;
 }
 
 enum PhysixSpriteType {
@@ -29,7 +30,7 @@ enum PhysixSpriteType {
     FLOOR;
 }
 /**
- * Math And gravity Based Physics Engine, used by `FlxBall` and more
+ * Math And gravity Based Physics Engine, used by `FlxPhysixBall` and more
  */
 class FlxPhysixEngine implements IFlxDestroyable{
     
@@ -43,7 +44,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * 
      * #### if `gravity = 0` - the objects will remain in place.
      */
-    public var gravity(default, set):Float;
+    public var gravity(default, set):Null<Float>;
 
     /**
      * The pull applied to the objects inside this engine.
@@ -55,29 +56,48 @@ class FlxPhysixEngine implements IFlxDestroyable{
      *      
      * #### if `pullForce = 0` - the objects will remain in place.
      */
-    public var pullForce(default, set):Float;
+    public var pullForce(default, set):Null<Float>;
 
-    public var effectedObjects:FlxGroup;
+    /**
+     * A `FlxGroup` containing the objects added to this `FlxPhysixEngine`
+     */
+    public var effectedObjects(default, null):FlxGroup;
 
-    public var floorObjects(default, default):FlxGroup;
+    public var floorObjects(default, null):FlxTypedGroup<FlxObject>;
+    
+    /**
+     * A `FlxGroup` containing the **Moveable** objects added to this `FlxPhysixEngine`
+     */
+    public var regularObjects(default, null):FlxTypedGroup<FlxObject>;
 
-    public var regularObjects(default, default):FlxGroup;
-
-    public var area(default, set):FlxPhysixArea;
-
+    /**
+     * An Area variable, that decides the type of gravity effecting the object:
+     * 
+     * - **Regular**
+     *  
+     *  acceleration towards the top/bottom of the screen (decided by `gravity`) 
+     *  and towards the right/left of the screen (decided by `pull`)
+     * 
+     * - **The rest don't work yet**
+     */
+    public var area(default, set):Null<FlxPhysixArea>;
+    
+    /**
+     * The Engine's `x` and `y` origin (top-left corner) and `width` and `height` properties (to decide its size)
+     */
     public var enginePositionStats(default, set):PhysixEnginePosStats;
 
-    var pastGravity:Float;
+    var pastGravity:Null<Float>;
 
-    var pastPullForce:Float;
+    var pastPullForce:Null<Float>;
 
-    var pastArea:FlxPhysixArea;
+    var pastArea:Null<FlxPhysixArea>;
 
     /**
      * Adds a new physics "playground". has a gravity, pull, area and positionStats feilds.
      * 
      * #### **NOTICE:** 
-     * Right now only supports the REGULAR `PhysixArea`. Other types will do nothing
+     * Right now only supports the REGULAR `FlxPhysixArea`. Other types will do nothing
      * 
      * @param gravity acceleration towards the ground - positive value will make objects fall, negative values will make objects float
      * @param pullForce acceleration towards the sides - positive values willmake objects go right, and vice-versa.
@@ -86,14 +106,24 @@ class FlxPhysixEngine implements IFlxDestroyable{
      */
     public function new(gravity:Float, pullForce:Float, area:FlxPhysixArea, ?positionStats:PhysixEnginePosStats) {
         effectedObjects = new FlxGroup();
-        floorObjects = new FlxGroup();
-        regularObjects = new FlxGroup();
+        floorObjects = new FlxTypedGroup();
+        regularObjects = new FlxTypedGroup();
         pastGravity = gravity;
         pastPullForce = pullForce;
         pastArea = area;
         enginePositionStats = positionStats;
     }
 
+    /**
+     * Adds an object (preferably a `FlxSprite`) to the engine, thus applying `gravity`
+     * and `pull` on it. this object will collide with other added objects and floors.
+     * 
+     * @param object The object you want to add to the engine. you can also pass in a `FlxSprite` if needed
+     * @param density How much will gravity effect it. a higher number will make it fall faster
+     *                and the closer the number to 0, the slower it will fall. if `density` is 0,
+     *                the object will remain in place.
+     * @return this FlxObject instance
+     */
     public function addObject(object:FlxObject, density:Float):FlxObject {
         effectedObjects.add(object);
         regularObjects.add(object);
@@ -168,7 +198,31 @@ class FlxPhysixEngine implements IFlxDestroyable{
 	}
 
 	public function destroy() {
-
+        
+        for (obj in regularObjects) {
+            removeObject(obj);
+        }
+        for (obj in floorObjects) {
+            removeFloor(obj);
+        }
+        for (g in [regularObjects, floorObjects, effectedObjects]) {
+            
+            g.kill();
+            g.destroy();
+        }
+        
+        gravity = null;
+        pullForce = null;
+        pastGravity = null;
+        pastPullForce = null;
+        pastArea = null;
+        enginePositionStats = {
+            x: null,
+            y: null,
+            width: null,
+            height: null
+        }
+        enginePositionStats = null;
     }
 }
 

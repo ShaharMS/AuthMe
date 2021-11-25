@@ -7,7 +7,7 @@ import flixel.FlxG;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxSprite;
 
-import msf.physix.FlxPhysixEngine.PhysixArea;
+import msf.physix.FlxPhysixEngine.FlxPhysixArea;
 import msf.physix.FlxPhysixEngine.PhysixSpriteType;
 
 /**
@@ -38,7 +38,7 @@ class FlxPhysixSprite extends FlxSprite {
     }
 
     public function addPhysix(?physixEngine:FlxPhysixEngine, density:Float = 1, bounce:Float = 0, type:PhysixSpriteType = OBJECT) {
-        if (physixEngine == null) physixEngine = new FlxPhysixEngine(600, 0, PhysixArea.REGULAR);
+        if (physixEngine == null) physixEngine = new FlxPhysixEngine(600, 0, FlxPhysixArea.REGULAR);
         if (type == FLOOR) 
         {
             physixEngine.addFloor(this);

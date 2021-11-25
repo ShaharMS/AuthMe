@@ -1,10 +1,13 @@
 package msf.physix.util;
 
+import flixel.FlxSprite;
+import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.group.FlxGroup;
 import flixel.FlxState;
 
 import msf.physix.FlxPhysixEngine.FlxPhysixArea;
+using msf.physix.util.FlxPhysixUtil;
 
 /**
  * If you have no need to create an Engine or specific `FlxPhysixSprite`s, this is for you.
@@ -18,17 +21,28 @@ class FlxPhysixUtil {
 
     public static var physixEngine:FlxPhysixEngine;
     
-    public static function applyPhysix(state:FlxState, extraOptions:PhysixOptions) {
+    public static function applyPhysix(sprite:FlxSprite, extraOptions:PhysixOptions) {
+        if (physixEngine != null) physixEngine = new FlxPhysixEngine(600, 0, FlxPhysixArea.REGULAR);
+
+        physixEngine.addObject(sprite, 1);
+
+        FlxG.signals.preStateSwitch.add(() -> {
+            sprite.removePhysix(); 
+        });
+    }
+
+    public static function applyGroupPhysix(group:FlxGroup, extraOptions:PhysixOptions) {
         
     }
 
-    @:overload(function applyPhysix(group:FlxGroup) {
+    public static function removePhysix(sprite:FlxSprite) {
         
-    })
+    }
 
-    @:overload(function applyPhysix(sprite:FlxSprite) {
+    public static function removeGroupPhysix(group:FlxGroup) {
         
-    })
+    }
+
 
 
 }
