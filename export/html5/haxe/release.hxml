@@ -1,0 +1,39 @@
+-main ApplicationMain 
+-cp C:/Users/shaha/lime/flixel/4,10,0
+-D flixel=4.10.0
+--macro openfl.utils._internal.ExtraParamsMacro.include()
+-cp C:/Users/shaha/lime/openfl/9,1,0/src
+-D openfl=9.1.0
+--macro lime._internal.macros.DefineMacro.run()
+-cp C:/Users/shaha/lime/lime/7,9,0/src
+-D lime=7.9.0
+-cp C:/Users/shaha/lime/flixel-addons/2,11,0
+-D flixel-addons=2.11.0
+-cp C:/Users/shaha/lime/flixel-ui/2,4,0
+-D flixel-ui=2.4.0
+-cp source
+-D ANDROID_SETUP=true
+-D ANDROID_NDK_ROOT=C:\Users\shaha\AppData\Local\Android\Sdk\ndk\ndk-bundle
+-D howlerjs
+-D lime-webgl
+-D lime-dom
+-D lime-howlerjs
+-D lime-html5
+-D HL_PATH=C:\Users\shaha\Desktop\Everything HaxeFlixel\hl-1.10.0-win
+-D tools=7.9.0
+-D ANDROID_SDK=C:\Users\shaha\AppData\Local\Android\Sdk
+-D lime-canvas
+-D FLX_NO_DEBUG
+-D no-compilation
+-D openfl-html5
+-D NAPE_RELEASE_BUILD
+-D JAVA_HOME=C:\Program Files\Java\jdk1.8.0_291
+-D html5
+-D web
+--remap flash:openfl
+--macro flixel.system.macros.FlxDefines.run()
+--connect
+6001
+-js export/html5/bin/msf.js
+-cp export/html5/haxe
+-D html5
