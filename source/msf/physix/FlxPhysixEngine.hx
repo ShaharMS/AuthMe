@@ -12,12 +12,17 @@ import flixel.FlxObject;
 abstract FlxPhysixArea(Int) from Int from UInt to Int to UInt
 {
     public static inline var REGULAR:Int = 1;
+
     public static inline var WATER:Int = 2;
+
     public static inline var SPACE:Int = 3;
-    public static inline var TABLE:Int = 4;
+
+    public static inline var FAKESPACE:Int = 4;
+
+    public static inline var TABLE:Int = 5;
 }
 
-typedef PhysixEnginePosStats = {
+typedef FlxPhysixEnginePosStats = {
 
     @:optional public var x:Null<Float>;
 
@@ -28,7 +33,7 @@ typedef PhysixEnginePosStats = {
     @:optional public var height:Null<Int>;
 }
 
-enum PhysixSpriteType {
+enum FlxPhysixSpriteType {
     OBJECT;
     FLOOR;
 }
@@ -62,33 +67,86 @@ class FlxPhysixEngine implements IFlxDestroyable{
     public var pullForce(default, set):Null<Float>;
 
     /**
-     * A `FlxGroup` containing the objects added to this `FlxPhysixEngine`
+     * A `FlxGroup` containing the objects added to this `FlxPhysixEngine`.
+     * For now, directly adding objects to this group won't make them effected by
+     * this `FlxPhysixEngine`
      */
     public var effectedObjects(default, null):FlxGroup;
 
+	/**
+	 * A `FlxGroup` containing the immovable floors added to this `FlxPhysixEngine`.
+	 * For now, directly adding objects to this group won't make them effected by
+	 * this `FlxPhysixEngine`
+	 */
     public var floorObjects(default, null):FlxTypedGroup<FlxSprite>;
     
     /**
      * A `FlxGroup` containing the **Moveable** objects added to this `FlxPhysixEngine`
+	 * For now, directly adding objects to this group won't make them effected by
+	 * this `FlxPhysixEngine`
      */
     public var regularObjects(default, null):FlxTypedGroup<FlxSprite>;
 
     /**
      * An Area variable, that decides the type of gravity effecting the object:
      * 
-     * - **Regular**
+     * # Regular
      *  
      *  acceleration towards the top/bottom of the screen (decided by `gravity`) 
-     *  and towards the right/left of the screen (decided by `pull`)
+     *  and towards the right/left of the screen (decided by `pull`).
      * 
-     * - **The rest don't work yet**
+     * # Water
+     *  
+     *  same as the regular `FlxPysixArea`, but objects can float/drown.
+     *  if the object's `density > 0`, the object will drown, and if 
+     *  the object's `density < 0 ` or `density = 0`, the object will float.
+     *  the speed in which it floats/drowns is determined by the object's gravity
+     *  and density. in the future, objects can also bubble out of the water
+     *  (instead of just stopping in position when floating, it will jump up & down
+     *  a bit).
+     * 
+     * # Space
+     * 
+     *  just like in actual space. the `gravity ` and `pull` , effect the objects 
+     *  (like theyr'e near a star), but WAY less. the objects accelerate over-time,
+     *  the objects will stop accelerating when they reach their maximum velocity.
+     *  Can be good for simulating stars in a galaxy\solar system.
+     * 
+     * # Fake Space
+     * 
+     *  The space type you see the most. like the `SPACE` area, gravity & pull exist,
+     *  but the objects are less effected by them. the difference between this type 
+     *  and the regular `SPACE`, is that objects actually stop over-time, and not accelerate.
+     *  Can be of good use in sandboxes or games in space. The time it takes the object to stop
+     *  corresponds to the `density` value: The closer to 0, the more time it takes the object to stop.
+     * 
+     * # Table
+     * 
+     *  By far the most complicated of them all to make. here, the gravity isnt towards a
+     *  certine X/Y direction, but towards the inside of the screen on the `Z` axis. does
+     *  this make it 3D? Not really, but it is kinda cool in my opinion. data effects this
+     *  `FlxPhsixArea` differently:
+     * 
+     *  ### `gravity & pull` - if the table is skewed, how much and to what direction:
+     *
+     *  **`gravity`**  - how much its skewed upwards/downwards. negative values will
+     *  make objects slide to the top of the table, and positive values
+     *  will make objects slide to the bottom of the table. 0 will not skew
+     *  the table on the Y axis.
+     * 
+	 *  **`pull`**  - how much its skewed to the left/right. negative values will
+	 *  make objects slide to the left of the table, and positive values
+	 *  will make objects slide to the right of the table. 0 will not skew
+	 *  the table on the X axis.
+     *   
+     *  
      */
     public var area(default, set):Null<FlxPhysixArea>;
     
     /**
      * The Engine's `x` and `y` origin (top-left corner) and `width` and `height` properties (to decide its size)
      */
-    public var enginePositionStats(default, set):PhysixEnginePosStats;
+    public var enginePositionStats(default, set):FlxPhysixEnginePosStats;
 
     var pastGravity:Null<Float>;
 
@@ -107,7 +165,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * @param area The effects that apply on the included objects that are handled by the engine
      * @param positionStats Set this if you want the engine's effects to e applied only in certine regions.
      */
-    public function new(gravity:Float = 600, pullForce:Float = 0, area:FlxPhysixArea = FlxPhysixArea.REGULAR, ?positionStats:PhysixEnginePosStats) {
+    public function new(gravity:Float = 600, pullForce:Float = 0, area:FlxPhysixArea = FlxPhysixArea.REGULAR, ?positionStats:FlxPhysixEnginePosStats) {
         effectedObjects = new FlxGroup();
         floorObjects = new FlxTypedGroup();
         regularObjects = new FlxTypedGroup();
@@ -209,7 +267,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
 	 * @param area            the type of gravity effecting the objects.
      * @param positionStats   Placement, width and height of the engine.
      */
-    public function setEngineVariables(gravity:Float, pullForce:Float, area:FlxPhysixArea, ?positionStats:PhysixEnginePosStats) {
+    public function setEngineVariables(gravity:Float, pullForce:Float, area:FlxPhysixArea, ?positionStats:FlxPhysixEnginePosStats) {
         this.gravity = gravity;
         this.pullForce = pullForce;
         this.area = area;
@@ -249,7 +307,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
 		return area;
 	}
 
-	function set_enginePositionStats(positionStats:PhysixEnginePosStats):PhysixEnginePosStats {
+	function set_enginePositionStats(positionStats:FlxPhysixEnginePosStats):FlxPhysixEnginePosStats {
 
         if (enginePositionStats.x == null) enginePositionStats.x = 0 else enginePositionStats.x = positionStats.x;
         if (enginePositionStats.y == null) enginePositionStats.y = 0 else enginePositionStats.y = positionStats.y;
