@@ -1,6 +1,6 @@
 {
     "name": "msf",
-    "classPath": "source",
+    "classPath": "src",
     "license": "MIT",
     "releasenote": "adding FlxPhysix - a physics engine",
     "contributors": ["ShaharMS"],
