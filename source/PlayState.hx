@@ -1,5 +1,6 @@
 package;
 
+using msf.language.FlxHebrew;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
@@ -13,11 +14,7 @@ class PlayState extends FlxState
 	override public function create()
 	{
 
-		s = new FlxSprite().makeGraphic(50, 50, FlxColor.RED);
-		add(s);
-		trace("!");
-		s.applyPhysix({});
-		trace("!");
+		trace("תתת".toHebrewNumerology());
 
 		super.create();
 	}
@@ -25,8 +22,6 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (FlxG.mouse.pressed) {
-			s.setPosition(FlxG.mouse.x, FlxG.mouse.y);
-		}
+		
 	}
 }

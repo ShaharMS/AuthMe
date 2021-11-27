@@ -888,7 +888,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "49";
+	app.meta.h["build"] = "51";
 	app.meta.h["company"] = "HaxeFlixel";
 	app.meta.h["file"] = "msf";
 	app.meta.h["name"] = "msf";
@@ -4767,19 +4767,11 @@ PlayState.__name__ = "PlayState";
 PlayState.__super__ = flixel_FlxState;
 PlayState.prototype = $extend(flixel_FlxState.prototype,{
 	create: function() {
-		this.s = new flixel_FlxSprite().makeGraphic(50,50,-65536);
-		this.add(this.s);
-		haxe_Log.trace("!",{ fileName : "source/PlayState.hx", lineNumber : 18, className : "PlayState", methodName : "create"});
-		msf_physix_util_FlxPhysixUtil.applyPhysix(this.s,{ });
-		haxe_Log.trace("!",{ fileName : "source/PlayState.hx", lineNumber : 20, className : "PlayState", methodName : "create"});
+		haxe_Log.trace(msf_language_FlxHebrew.toHebrewNumerology("תתת"),{ fileName : "source/PlayState.hx", lineNumber : 17, className : "PlayState", methodName : "create"});
 		flixel_FlxState.prototype.create.call(this);
 	}
 	,update: function(elapsed) {
 		flixel_FlxState.prototype.update.call(this,elapsed);
-		var _this = flixel_FlxG.mouse._leftButton;
-		if(_this.current == 1 || _this.current == 2) {
-			this.s.setPosition(flixel_FlxG.mouse.x,flixel_FlxG.mouse.y);
-		}
 	}
 	,__class__: PlayState
 });
@@ -60554,7 +60546,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 166748;
+	this.version = 712327;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
@@ -62806,6 +62798,21 @@ lime_utils_UInt8ClampedArray._clamp = function(_in) {
 		return _out;
 	}
 };
+var msf_language_FlxHebrew = function() { };
+$hxClasses["msf.language.FlxHebrew"] = msf_language_FlxHebrew;
+msf_language_FlxHebrew.__name__ = "msf.language.FlxHebrew";
+msf_language_FlxHebrew.toHebrewNumerology = function(hebrewString) {
+	var stringLength = hebrewString.length;
+	var sum = 0;
+	var _g = 0;
+	var _g1 = stringLength;
+	while(_g < _g1) {
+		var i = _g++;
+		var mapTranslation = msf_language_FlxHebrew.hebrewMap.h[hebrewString.charAt(i)];
+		sum += mapTranslation;
+	}
+	return sum;
+};
 var msf_physix_FlxPhysixArea = {};
 var msf_physix_FlxPhysixSpriteType = $hxEnums["msf.physix.FlxPhysixSpriteType"] = { __ename__:"msf.physix.FlxPhysixSpriteType",__constructs__:null
 	,OBJECT: {_hx_name:"OBJECT",_hx_index:0,__enum__:"msf.physix.FlxPhysixSpriteType",toString:$estr}
@@ -62849,7 +62856,7 @@ msf_physix_FlxPhysixEngine.prototype = {
 		sprite.acceleration.set_x(0);
 		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 199, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
 		openfl_Lib.get_current().stage.addEventListener("enterFrame",function(event) {
-			if(!_gthis.outOfBounds(sprite)) {
+			if(_gthis.checkBounds(sprite)) {
 				haxe_Log.trace("hasPhysix",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 203, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
 			} else {
 				sprite.acceleration.set_y(0);
@@ -62888,7 +62895,7 @@ msf_physix_FlxPhysixEngine.prototype = {
 		this.width = width;
 		this.height = height;
 	}
-	,outOfBounds: function(sprite) {
+	,checkBounds: function(sprite) {
 		if(sprite.x >= this.x && sprite.y >= this.y && sprite.x + sprite.get_width() <= this.x + this.width) {
 			return sprite.y + sprite.get_height() <= this.y + this.height;
 		} else {
@@ -108874,6 +108881,39 @@ lime_utils_UInt16Array.BYTES_PER_ELEMENT = 2;
 lime_utils_UInt32Array.BYTES_PER_ELEMENT = 4;
 lime_utils_UInt8Array.BYTES_PER_ELEMENT = 1;
 lime_utils_UInt8ClampedArray.BYTES_PER_ELEMENT = 1;
+msf_language_FlxHebrew.hebrewMap = (function($this) {
+	var $r;
+	var _g = new haxe_ds_StringMap();
+	_g.h["א"] = 1;
+	_g.h["ב"] = 2;
+	_g.h["ג"] = 3;
+	_g.h["ד"] = 4;
+	_g.h["ה"] = 5;
+	_g.h["ו"] = 6;
+	_g.h["ז"] = 7;
+	_g.h["ח"] = 8;
+	_g.h["ט"] = 9;
+	_g.h["י"] = 10;
+	_g.h["כ"] = 20;
+	_g.h["ל"] = 30;
+	_g.h["מ"] = 40;
+	_g.h["נ"] = 50;
+	_g.h["ס"] = 60;
+	_g.h["ע"] = 70;
+	_g.h["פ"] = 80;
+	_g.h["צ"] = 90;
+	_g.h["ק"] = 100;
+	_g.h["ר"] = 200;
+	_g.h["ש"] = 300;
+	_g.h["ת"] = 400;
+	_g.h["ך"] = 500;
+	_g.h["ם"] = 600;
+	_g.h["ן"] = 700;
+	_g.h["ף"] = 800;
+	_g.h["ץ"] = 900;
+	$r = _g;
+	return $r;
+}(this));
 msf_physix_FlxPhysixArea.REGULAR = 1;
 msf_physix_FlxPhysixArea.WATER = 2;
 msf_physix_FlxPhysixArea.SPACE = 3;
