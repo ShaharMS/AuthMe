@@ -22,17 +22,6 @@ abstract FlxPhysixArea(Int) from Int from UInt to Int to UInt
     public static inline var TABLE:Int = 5;
 }
 
-typedef FlxPhysixEnginePosStats = {
-
-    @:optional public var x:Null<Float>;
-
-    @:optional public var y:Null<Float>;
-
-    @:optional public var width:Null<Int>;
-
-    @:optional public var height:Null<Int>;
-}
-
 enum FlxPhysixSpriteType {
     OBJECT;
     FLOOR;
@@ -52,7 +41,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * 
      * #### if `gravity = 0` - the objects will remain in place.
      */
-    public var gravity(default, set):Null<Float>;
+    @:isVar public var gravity(default, set):Null<Float>;
 
     /**
      * The pull applied to the objects inside this engine.
@@ -64,7 +53,7 @@ class FlxPhysixEngine implements IFlxDestroyable{
      *      
      * #### if `pullForce = 0` - the objects will remain in place.
      */
-    public var pullForce(default, set):Null<Float>;
+    @:isVar public var pullForce(default, set):Null<Float>;
 
     /**
      * A `FlxGroup` containing the objects added to this `FlxPhysixEngine`.
@@ -144,9 +133,21 @@ class FlxPhysixEngine implements IFlxDestroyable{
     public var area(default, set):Null<FlxPhysixArea>;
     
     /**
-     * The Engine's `x` and `y` origin (top-left corner) and `width` and `height` properties (to decide its size)
+     * The Engine's `x` origin (top-left corner)
      */
-    public var enginePositionStats(default, set):FlxPhysixEnginePosStats;
+    public var x:Float = 0;
+	/**
+	 * The Engine's `y` origin (top-left corner)
+	 */
+    public var y:Float = 0;
+	/**
+	 * The Engine's `width` (from the tp left corner)
+	 */
+    public var width:Int = FlxG.width;
+	/**
+	 * The Engine's `height` (from the tp left corner)
+	 */
+    public var height:Int = FlxG.height;
 
     var pastGravity:Null<Float>;
 
@@ -165,20 +166,15 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * @param area The effects that apply on the included objects that are handled by the engine
      * @param positionStats Set this if you want the engine's effects to e applied only in certine regions.
      */
-    public function new(gravity:Float = 600, pullForce:Float = 0, area:FlxPhysixArea = FlxPhysixArea.REGULAR, ?positionStats:FlxPhysixEnginePosStats) {
+    public function new(gravity:Float = 100, pullForce:Float = 0, area:FlxPhysixArea = FlxPhysixArea.REGULAR) {
         effectedObjects = new FlxGroup();
         floorObjects = new FlxTypedGroup();
         regularObjects = new FlxTypedGroup();
         pastGravity = gravity;
         pastPullForce = pullForce;
         pastArea = area;
-
-        enginePositionStats = {
-            x: positionStats.x,
-            y: positionStats.y,
-            width: positionStats.width,
-            height: positionStats.height
-        }
+		this.gravity = gravity;
+		this.pullForce = pullForce;
     }
 
     /**
@@ -191,26 +187,26 @@ class FlxPhysixEngine implements IFlxDestroyable{
      *                the object will remain in place.
      * @return this FlxObject instance
      */
-    public function addObject(sprite:FlxSprite, density:Float):FlxObject {
+    public function addObject(sprite:FlxSprite, density:Float):FlxSprite {
 		trace("!");
         effectedObjects.add(sprite);
         regularObjects.add(sprite);
         trace("!");
-		sprite.maxVelocity.y = gravity * density / 1 + (gravity * density / 1) / 4;
-		sprite.maxVelocity.x = pullForce * density / 1 + (pullForce * density / 1) / 4;
+		sprite.acceleration.y = 10;
+        sprite.acceleration.x = 0;
+		//sprite.maxVelocity.y = gravity * density + (gravity * density) / 2;
+		//sprite.maxVelocity.x = pullForce * density + (pullForce * density) / 2;
 		trace("!");
         FlxG.stage.addEventListener(Event.ENTER_FRAME, (event) -> {
 			if (checkBounds(sprite))
 			{
-				sprite.acceleration.y = gravity * density / 1;
-				sprite.acceleration.x = pullForce * density / 1;
-				trace("!");
+                trace("hasPhysix");
 			}
             else
             {
 				sprite.acceleration.y = 0;
 				sprite.acceleration.x = 0;
-				trace("!");
+				trace("OutOfBounds");
             }
         });
         
@@ -267,11 +263,15 @@ class FlxPhysixEngine implements IFlxDestroyable{
 	 * @param area            the type of gravity effecting the objects.
      * @param positionStats   Placement, width and height of the engine.
      */
-    public function setEngineVariables(gravity:Float, pullForce:Float, area:FlxPhysixArea, ?positionStats:FlxPhysixEnginePosStats) {
+    public function setEngineVariables(gravity:Float, pullForce:Float, area:FlxPhysixArea, x:Float, y:Float, width:Int, height:Int) {
         this.gravity = gravity;
         this.pullForce = pullForce;
         this.area = area;
-        this.enginePositionStats = positionStats;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
     }
     
     /**
@@ -281,17 +281,18 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * @return Bool
      */
     public function checkBounds(sprite:FlxSprite):Bool {
-		return (sprite.x >= enginePositionStats.x &&
-                sprite.y >= enginePositionStats.y && 
-                sprite.x <= enginePositionStats.x + enginePositionStats.width && 
-                sprite.y <= enginePositionStats.y + enginePositionStats.height);
+		return (sprite.x >= x &&
+                sprite.y >= y && 
+                sprite.x + sprite.width <= x + width && 
+                sprite.y + sprite.height <= y + height);
     }
 
     function set_gravity(gravity:Float):Float {
-		effectedObjects.forEachOfType(FlxObject ,function (s:FlxObject) {
+		regularObjects.forEachOfType(FlxSprite ,function (s:FlxSprite) {
             s.acceleration.y = s.acceleration.y / pastGravity * gravity;
         });
         pastGravity = gravity;
+        this.gravity = gravity;
         return gravity;
 	}
 
@@ -305,15 +306,6 @@ class FlxPhysixEngine implements IFlxDestroyable{
 
 	function set_area(area:FlxPhysixArea):FlxPhysixArea {
 		return area;
-	}
-
-	function set_enginePositionStats(positionStats:FlxPhysixEnginePosStats):FlxPhysixEnginePosStats {
-
-        if (enginePositionStats.x == null) enginePositionStats.x = 0 else enginePositionStats.x = positionStats.x;
-        if (enginePositionStats.y == null) enginePositionStats.y = 0 else enginePositionStats.y = positionStats.y;
-        if (enginePositionStats.width == null) enginePositionStats.width = FlxG.width else enginePositionStats.width = positionStats.width;
-        if (enginePositionStats.height == null) enginePositionStats.height = FlxG.height else enginePositionStats.height = positionStats.height;
-        return positionStats;  
 	}
 
 	public function destroy() {
@@ -335,13 +327,6 @@ class FlxPhysixEngine implements IFlxDestroyable{
         pastGravity = null;
         pastPullForce = null;
         pastArea = null;
-        enginePositionStats = {
-            x: null,
-            y: null,
-            width: null,
-            height: null
-        }
-        enginePositionStats = null;
     }
 }
 

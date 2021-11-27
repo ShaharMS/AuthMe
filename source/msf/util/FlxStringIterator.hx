@@ -2,28 +2,48 @@ package msf.util;
 
 import StringBuf;
 
-class FlxStringCodeIterator
+class FlxStringIterator
 {
-	var str:String = '';
+	var string:String = '';
 	var buffer:StringBuf;
 
-	public var pos:Int;
-	public var c:Int;
+	public var position:Int;
+	public var character:Int;
 	public var last2:String;
 	public var last:String;
+
+	/**
+	 * The length of the 
+	 */
 	public var length:Int;
 
 	public function new(str_:String, ?pos_:Int = 0)
 	{
-		pos = pos_;
-		str = str_;
-		length = str.length;
+		position = pos_;
+		string = str_;
+		length = string.length;
 		buffer = new StringBuf();
 	}
 
-	inline public function addChar()
+	/**
+	 * Adds the char from the index `character` to the `buffer` (a StringBuf)
+	 * @param CustomChar if you want to add a character and not change the public `character` var.
+	 * a value below 0 or above the buffer's length won't do anything.
+	 */
+	inline public function addCharFromIndex(?CustomChar:Int)
 	{
-		buffer.addChar(c);
+		if (CustomChar != null) {
+			if (CustomChar < 0 || CustomChar > buffer.length) {
+				return;
+			}
+			else {
+				buffer.addChar(CustomChar);
+			}
+		}
+		else {
+			buffer.addChar(character);
+		}
+
 	}
 
 	inline public function toString()
@@ -47,17 +67,20 @@ class FlxStringCodeIterator
 
 	inline public function reset()
 	{
-		pos = 0;
+		position = 0;
 	}
 
 	inline public function hasNext()
 	{
-		return pos < length;
+		return position < length;
 	}
 
+	/**
+	 * Calculates and returns the character at the next position
+	 */
 	inline public function next()
 	{
-		c = StringTools.fastCodeAt(str, pos++);
-		return c;
+		character = StringTools.fastCodeAt(string, position++);
+		return character;
 	}
 }

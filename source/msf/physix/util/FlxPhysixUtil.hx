@@ -23,7 +23,7 @@ class FlxPhysixUtil {
     
     public static function applyPhysix(sprite:FlxSprite, extraOptions:PhysixOptions) {
 		trace("!");
-        if (physixEngine != null) physixEngine = new FlxPhysixEngine(600, 0, FlxPhysixArea.REGULAR);
+        if (physixEngine == null) physixEngine = new FlxPhysixEngine(0, 0, FlxPhysixArea.REGULAR);
 		trace("!");
         physixEngine.addObject(sprite, 1);
 		trace("!");

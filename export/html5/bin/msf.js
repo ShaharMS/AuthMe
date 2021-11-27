@@ -888,7 +888,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "5";
+	app.meta.h["build"] = "49";
 	app.meta.h["company"] = "HaxeFlixel";
 	app.meta.h["file"] = "msf";
 	app.meta.h["name"] = "msf";
@@ -4767,9 +4767,12 @@ PlayState.__name__ = "PlayState";
 PlayState.__super__ = flixel_FlxState;
 PlayState.prototype = $extend(flixel_FlxState.prototype,{
 	create: function() {
-		flixel_FlxState.prototype.create.call(this);
 		this.s = new flixel_FlxSprite().makeGraphic(50,50,-65536);
+		this.add(this.s);
+		haxe_Log.trace("!",{ fileName : "source/PlayState.hx", lineNumber : 18, className : "PlayState", methodName : "create"});
 		msf_physix_util_FlxPhysixUtil.applyPhysix(this.s,{ });
+		haxe_Log.trace("!",{ fileName : "source/PlayState.hx", lineNumber : 20, className : "PlayState", methodName : "create"});
+		flixel_FlxState.prototype.create.call(this);
 	}
 	,update: function(elapsed) {
 		flixel_FlxState.prototype.update.call(this,elapsed);
@@ -60551,7 +60554,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 325025;
+	this.version = 166748;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
@@ -62804,12 +62807,12 @@ lime_utils_UInt8ClampedArray._clamp = function(_in) {
 	}
 };
 var msf_physix_FlxPhysixArea = {};
-var msf_physix_PhysixSpriteType = $hxEnums["msf.physix.PhysixSpriteType"] = { __ename__:"msf.physix.PhysixSpriteType",__constructs__:null
-	,OBJECT: {_hx_name:"OBJECT",_hx_index:0,__enum__:"msf.physix.PhysixSpriteType",toString:$estr}
-	,FLOOR: {_hx_name:"FLOOR",_hx_index:1,__enum__:"msf.physix.PhysixSpriteType",toString:$estr}
+var msf_physix_FlxPhysixSpriteType = $hxEnums["msf.physix.FlxPhysixSpriteType"] = { __ename__:"msf.physix.FlxPhysixSpriteType",__constructs__:null
+	,OBJECT: {_hx_name:"OBJECT",_hx_index:0,__enum__:"msf.physix.FlxPhysixSpriteType",toString:$estr}
+	,FLOOR: {_hx_name:"FLOOR",_hx_index:1,__enum__:"msf.physix.FlxPhysixSpriteType",toString:$estr}
 };
-msf_physix_PhysixSpriteType.__constructs__ = [msf_physix_PhysixSpriteType.OBJECT,msf_physix_PhysixSpriteType.FLOOR];
-var msf_physix_FlxPhysixEngine = function(gravity,pullForce,area,positionStats) {
+msf_physix_FlxPhysixSpriteType.__constructs__ = [msf_physix_FlxPhysixSpriteType.OBJECT,msf_physix_FlxPhysixSpriteType.FLOOR];
+var msf_physix_FlxPhysixEngine = function(gravity,pullForce,area) {
 	if(area == null) {
 		area = 1;
 	}
@@ -62817,15 +62820,20 @@ var msf_physix_FlxPhysixEngine = function(gravity,pullForce,area,positionStats) 
 		pullForce = 0;
 	}
 	if(gravity == null) {
-		gravity = 600;
+		gravity = 100;
 	}
+	this.height = flixel_FlxG.height;
+	this.width = flixel_FlxG.width;
+	this.y = 0;
+	this.x = 0;
 	this.effectedObjects = new flixel_group_FlxTypedGroup();
 	this.floorObjects = new flixel_group_FlxTypedGroup();
 	this.regularObjects = new flixel_group_FlxTypedGroup();
 	this.pastGravity = gravity;
 	this.pastPullForce = pullForce;
 	this.pastArea = area;
-	this.set_enginePositionStats({ x : positionStats.x, y : positionStats.y, width : positionStats.width, height : positionStats.height});
+	this.set_gravity(gravity);
+	this.set_pullForce(pullForce);
 };
 $hxClasses["msf.physix.FlxPhysixEngine"] = msf_physix_FlxPhysixEngine;
 msf_physix_FlxPhysixEngine.__name__ = "msf.physix.FlxPhysixEngine";
@@ -62833,22 +62841,20 @@ msf_physix_FlxPhysixEngine.__interfaces__ = [flixel_util_IFlxDestroyable];
 msf_physix_FlxPhysixEngine.prototype = {
 	addObject: function(sprite,density) {
 		var _gthis = this;
-		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 137, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
+		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 191, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
 		this.effectedObjects.add(sprite);
 		this.regularObjects.add(sprite);
-		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 140, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
-		sprite.maxVelocity.set_y(this.gravity * density / 1 + this.gravity * density / 1 / 4);
-		sprite.maxVelocity.set_x(this.pullForce * density / 1 + this.pullForce * density / 1 / 4);
-		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 143, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
+		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 194, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
+		sprite.acceleration.set_y(10);
+		sprite.acceleration.set_x(0);
+		haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 199, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
 		openfl_Lib.get_current().stage.addEventListener("enterFrame",function(event) {
-			if(_gthis.checkBounds(sprite)) {
-				sprite.acceleration.set_y(_gthis.gravity * density / 1);
-				sprite.acceleration.set_x(_gthis.pullForce * density / 1);
-				haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 149, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
+			if(!_gthis.outOfBounds(sprite)) {
+				haxe_Log.trace("hasPhysix",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 203, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
 			} else {
 				sprite.acceleration.set_y(0);
 				sprite.acceleration.set_x(0);
-				haxe_Log.trace("!",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 155, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
+				haxe_Log.trace("OutOfBounds",{ fileName : "source/msf/physix/FlxPhysixEngine.hx", lineNumber : 209, className : "msf.physix.FlxPhysixEngine", methodName : "addObject"});
 			}
 		});
 		return sprite;
@@ -62873,25 +62879,29 @@ msf_physix_FlxPhysixEngine.prototype = {
 		this.effectedObjects.remove(floor);
 		this.floorObjects.remove(floor);
 	}
-	,setEngineVariables: function(gravity,pullForce,area,positionStats) {
+	,setEngineVariables: function(gravity,pullForce,area,x,y,width,height) {
 		this.set_gravity(gravity);
 		this.set_pullForce(pullForce);
 		this.set_area(area);
-		this.set_enginePositionStats(positionStats);
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 	}
-	,checkBounds: function(sprite) {
-		if(sprite.x >= this.enginePositionStats.x && sprite.y >= this.enginePositionStats.y && sprite.x <= this.enginePositionStats.x + this.enginePositionStats.width) {
-			return sprite.y <= this.enginePositionStats.y + this.enginePositionStats.height;
+	,outOfBounds: function(sprite) {
+		if(sprite.x >= this.x && sprite.y >= this.y && sprite.x + sprite.get_width() <= this.x + this.width) {
+			return sprite.y + sprite.get_height() <= this.y + this.height;
 		} else {
 			return false;
 		}
 	}
 	,set_gravity: function(gravity) {
 		var _gthis = this;
-		this.effectedObjects.forEachOfType(flixel_FlxObject,function(s) {
+		this.regularObjects.forEachOfType(flixel_FlxSprite,function(s) {
 			s.acceleration.set_y(s.acceleration.y / _gthis.pastGravity * gravity);
 		});
 		this.pastGravity = gravity;
+		this.gravity = gravity;
 		return gravity;
 	}
 	,set_pullForce: function(pullForce) {
@@ -62904,29 +62914,6 @@ msf_physix_FlxPhysixEngine.prototype = {
 	}
 	,set_area: function(area) {
 		return area;
-	}
-	,set_enginePositionStats: function(positionStats) {
-		if(this.enginePositionStats.x == null) {
-			this.enginePositionStats.x = 0;
-		} else {
-			this.enginePositionStats.x = positionStats.x;
-		}
-		if(this.enginePositionStats.y == null) {
-			this.enginePositionStats.y = 0;
-		} else {
-			this.enginePositionStats.y = positionStats.y;
-		}
-		if(this.enginePositionStats.width == null) {
-			this.enginePositionStats.width = flixel_FlxG.width;
-		} else {
-			this.enginePositionStats.width = positionStats.width;
-		}
-		if(this.enginePositionStats.height == null) {
-			this.enginePositionStats.height = flixel_FlxG.height;
-		} else {
-			this.enginePositionStats.height = positionStats.height;
-		}
-		return positionStats;
 	}
 	,destroy: function() {
 		var obj = new flixel_group_FlxTypedGroupIterator(this.regularObjects.members,null);
@@ -62953,19 +62940,17 @@ msf_physix_FlxPhysixEngine.prototype = {
 		this.pastGravity = null;
 		this.pastPullForce = null;
 		this.pastArea = null;
-		this.set_enginePositionStats({ x : null, y : null, width : null, height : null});
-		this.set_enginePositionStats(null);
 	}
 	,__class__: msf_physix_FlxPhysixEngine
-	,__properties__: {set_enginePositionStats:"set_enginePositionStats",set_area:"set_area",set_pullForce:"set_pullForce",set_gravity:"set_gravity"}
+	,__properties__: {set_area:"set_area",set_pullForce:"set_pullForce",set_gravity:"set_gravity"}
 };
 var msf_physix_util_FlxPhysixUtil = function() { };
 $hxClasses["msf.physix.util.FlxPhysixUtil"] = msf_physix_util_FlxPhysixUtil;
 msf_physix_util_FlxPhysixUtil.__name__ = "msf.physix.util.FlxPhysixUtil";
 msf_physix_util_FlxPhysixUtil.applyPhysix = function(sprite,extraOptions) {
 	haxe_Log.trace("!",{ fileName : "source/msf/physix/util/FlxPhysixUtil.hx", lineNumber : 25, className : "msf.physix.util.FlxPhysixUtil", methodName : "applyPhysix"});
-	if(msf_physix_util_FlxPhysixUtil.physixEngine != null) {
-		msf_physix_util_FlxPhysixUtil.physixEngine = new msf_physix_FlxPhysixEngine(600,0,1);
+	if(msf_physix_util_FlxPhysixUtil.physixEngine == null) {
+		msf_physix_util_FlxPhysixUtil.physixEngine = new msf_physix_FlxPhysixEngine(0,0,1);
 	}
 	haxe_Log.trace("!",{ fileName : "source/msf/physix/util/FlxPhysixUtil.hx", lineNumber : 27, className : "msf.physix.util.FlxPhysixUtil", methodName : "applyPhysix"});
 	msf_physix_util_FlxPhysixUtil.physixEngine.addObject(sprite,1);
@@ -106410,7 +106395,7 @@ flixel_FlxCamera.renderRect = (function($this) {
 	$r = rect;
 	return $r;
 }(this));
-flixel_system_FlxVersion.sha = "";
+flixel_system_FlxVersion.sha = "eae0c47eede472846e0eea4fefca9445885000ee\n";
 flixel_math_FlxRandom.MULTIPLIER = 48271.0;
 flixel_math_FlxRandom.MODULUS = 2147483647;
 flixel_FlxG.autoPause = true;
@@ -108892,7 +108877,8 @@ lime_utils_UInt8ClampedArray.BYTES_PER_ELEMENT = 1;
 msf_physix_FlxPhysixArea.REGULAR = 1;
 msf_physix_FlxPhysixArea.WATER = 2;
 msf_physix_FlxPhysixArea.SPACE = 3;
-msf_physix_FlxPhysixArea.TABLE = 4;
+msf_physix_FlxPhysixArea.FAKESPACE = 4;
+msf_physix_FlxPhysixArea.TABLE = 5;
 openfl_Lib.__lastTimerID = 0;
 openfl_Lib.__sentWarnings = new haxe_ds_StringMap();
 openfl_Lib.__timers = new haxe_ds_IntMap();

@@ -12,9 +12,14 @@ class PlayState extends FlxState
 	var s:FlxSprite;
 	override public function create()
 	{
-		super.create();
+
 		s = new FlxSprite().makeGraphic(50, 50, FlxColor.RED);
+		add(s);
+		trace("!");
 		s.applyPhysix({});
+		trace("!");
+
+		super.create();
 	}
 
 	override public function update(elapsed:Float)

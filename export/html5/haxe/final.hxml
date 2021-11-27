@@ -33,7 +33,7 @@
 --remap flash:openfl
 --macro flixel.system.macros.FlxDefines.run()
 --connect
-6001
+6000
 -js export/html5/bin/msf.js
 -cp export/html5/haxe
 -D html5
