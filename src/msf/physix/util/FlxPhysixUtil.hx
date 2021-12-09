@@ -22,11 +22,8 @@ class FlxPhysixUtil {
     public static var physixEngine:FlxPhysixEngine;
     
     public static function applyPhysix(sprite:FlxSprite, extraOptions:PhysixOptions) {
-		trace("!");
         if (physixEngine == null) physixEngine = new FlxPhysixEngine(0, 0, FlxPhysixArea.REGULAR);
-		trace("!");
         physixEngine.addObject(sprite, 1);
-		trace("!");
         FlxG.signals.preStateSwitch.add(() -> {
             sprite.removePhysix(); 
         });

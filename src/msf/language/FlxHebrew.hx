@@ -1,19 +1,31 @@
 package msf.language;
 
 class FlxHebrew {
+
+	/**
+	 * Takes in a **HEBREW** string and returns its value as an `Int` in hebrew numerology.
+	 * @param hebrewString the string to convert
+	 * @return its value in hebrew numerology
+	 */
 	public static function toHebrewNumerology(hebrewString:String) {
 		var sum:Int = 0;
 		for (i in 0...hebrewString.length) sum += hebrewMap[hebrewString.charAt(i)];
 		return sum;
 	}
 
+	/**
+	 * Takes in any number and returns a string of the same value - but in hebrew numerology.
+	 * not recommended for very large numbers.
+	 * @param number the number to convert
+	 * @return a string of the hebrew numerology (in letters)
+	 */
 	public static function toHebrewNumber(number:Int) {
 		var __internalNumber:Int = number;
 		var finalString:String = "";
-		for (letterTrans in [400, 300, 200, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) {
-			while (__internalNumber > letterTrans) {
-				finalString = numMap[letterTrans] + finalString;
-				__internalNumber -= letterTrans;
+		for (letterTranslation in [400, 300, 200, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) {
+			while (__internalNumber > letterTranslation) {
+				finalString = numberMap[letterTranslation] + finalString;
+				__internalNumber -= letterTranslation;
 			}
 
 		}
@@ -21,8 +33,10 @@ class FlxHebrew {
 	}
 	
 	
-	
-	public static var numMap:Map<Int, String> = [
+	/**
+	 * A map that matches between numbers and their hebrew letter numerology value
+	 */
+	public static var numberMap:Map<Int, String> = [
 		1 => "א",
 		2 => "ב",
 		3 => "ג",
@@ -46,6 +60,9 @@ class FlxHebrew {
 		300 => "ש",
 		400 => "ת"];
 	
+	/**
+	 * A map that matches between hebrew letters and their numerology value
+	 */
 	public static var hebrewMap:Map<String, Int> = [
 	"א" => 1,
 	 "ב" => 2,
