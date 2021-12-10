@@ -11,14 +11,45 @@ import flixel.FlxObject;
 
 abstract FlxPhysixArea(Int) from Int from UInt to Int to UInt
 {
+    /**
+	 * acceleration towards the top/bottom of the screen (decided by `gravity`) 
+	 * and towards the right/left of the screen (decided by `pull`).
+     */
     public static inline var REGULAR:Int = 1;
 
+    /**
+	 * same as the regular `FlxPysixArea`, but objects can float/drown.
+	 * if the object's `density > 0`, the object will drown, and if 
+	 * the object's `density < 0 ` or `density = 0`, the object will float.
+	 * the speed in which it floats/drowns is determined by the object's gravity
+	 * and density. in the future, objects can also bubble out of the water
+	 * (instead of just stopping in position when floating, it will jump up & down
+	 * a bit).
+     */
     public static inline var WATER:Int = 2;
 
+    /**
+	 * just like in actual space. the `gravity ` and `pull` , effect the objects 
+	 * (like theyr'e near a star), but WAY less. the objects accelerate over-time,
+	 * the objects will stop accelerating when they reach their maximum velocity.
+	 * Can be good for simulating stars in a galaxy\solar system.
+     */
     public static inline var SPACE:Int = 3;
 
-    public static inline var FAKESPACE:Int = 4;
+    /**
+	 * The space type you see the most. like the `SPACE` area, gravity & pull exist,
+	 *  but the objects are less effected by them. the difference between this type 
+	 *  and the regular `SPACE`, is that objects actually stop over-time, and not accelerate.
+	 *  Can be of good use in sandboxes or games in space. The time it takes the object to stop
+	 *  corresponds to the `density` value: The closer to 0, the more time it takes the object to stop.
+     */
+    public static inline var FAKE_SPACE:Int = 4;
 
+    /**
+	 * By far the most complicated of them all to make. here, the gravity isnt towards a
+	 * certine X/Y direction, but towards the inside of the screen on the `Z` axis. does
+	 * this make it 3D? Not really, but it is kinda cool in my opinion.
+     */
     public static inline var TABLE:Int = 5;
 }
 
@@ -188,10 +219,8 @@ class FlxPhysixEngine implements IFlxDestroyable{
      * @return this FlxObject instance
      */
     public function addObject(sprite:FlxSprite, density:Float):FlxSprite {
-		trace("!");
         effectedObjects.add(sprite);
         regularObjects.add(sprite);
-        trace("!");
 		sprite.acceleration.y = 10;
         sprite.acceleration.x = 0;
 		//sprite.maxVelocity.y = gravity * density + (gravity * density) / 2;

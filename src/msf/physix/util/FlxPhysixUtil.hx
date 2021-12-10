@@ -21,7 +21,7 @@ class FlxPhysixUtil {
 
     public static var physixEngine:FlxPhysixEngine;
     
-    public static function applyPhysix(sprite:FlxSprite, extraOptions:PhysixOptions) {
+    public static function applyPhysix(sprite:FlxSprite) {
         if (physixEngine == null) physixEngine = new FlxPhysixEngine(0, 0, FlxPhysixArea.REGULAR);
         physixEngine.addObject(sprite, 1);
         FlxG.signals.preStateSwitch.add(() -> {
@@ -29,7 +29,7 @@ class FlxPhysixUtil {
         });
     }
 
-    public static function applyGroupPhysix(group:FlxGroup, extraOptions:PhysixOptions) {
+    public static function applyGroupPhysix(group:FlxGroup) {
         
     }
 
@@ -42,16 +42,5 @@ class FlxPhysixUtil {
     }
 
 
-
-}
-
-typedef PhysixOptions = {
-
-
-    @:optional var area:FlxPhysixArea;
-
-    @:optional var gravity:Int;
-
-    @:optional var pull:Int;
 
 }
