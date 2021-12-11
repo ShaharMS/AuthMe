@@ -1,5 +1,8 @@
 package msf.language;
 
+import haxe.http.HttpJs;
+import haxe.http.HttpBase;
+
 class FlxHebrew {
 
 	/**
@@ -31,6 +34,29 @@ class FlxHebrew {
 		}
 		return finalString;
 	}
+	/**
+	 * Gets the hebrew translation of a given sentence in one of the supported languages.
+	 * #### **NOTICE**
+	 * requires internet connection - the translations are gathered from google translate,
+	 * altho once a sentence has been translated, the translation of that specific sentence no longer requires 
+	 * active connection
+	 * @param stringToTranslate Your hebrew word/sentence
+	 * @param sourceLanguage the language youre translating from. doesnt support every single active language - for now :)
+	 */
+	public static function getHebrewTranslation(stringToTranslate:String ,sourceLanguage:FlxLanguage) {
+		var URL = 'https://translate.google.com/?sl=${sourceLanguage}&tl=${FlxLanguage.HEBREW}&text=$stringToTranslate&op=translate';
+		#if sys
+
+		#elseif js
+		var httpInstance = new HttpJs(URL);
+		httpInstance.request();
+		httpInstance.onData = (data) -> {
+			trace(data);
+		}
+		#elseif flash
+
+		#end
+	}
 	
 	
 	/**
@@ -39,7 +65,6 @@ class FlxHebrew {
 	public static var numberMap:Map<Int, String> = [
 		1 => "א",
 		2 => "ב",
-		3 => "ג",
 		4 => "ד",
 		5 => "ה",
 		6 => "ו",
@@ -58,7 +83,8 @@ class FlxHebrew {
 		100 => "ק",
 		200 => "ר",
 		300 => "ש",
-		400 => "ת"];
+		400 => "ת"
+	];
 	
 	/**
 	 * A map that matches between hebrew letters and their numerology value
@@ -90,5 +116,6 @@ class FlxHebrew {
 	 "ם" => 40,
 	 "ן" => 50,
 	 "ף" => 80,
-	 "ץ" => 90];
+	 "ץ" => 90
+	];
 }
