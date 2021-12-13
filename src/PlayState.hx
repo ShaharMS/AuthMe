@@ -15,6 +15,7 @@ using msf.physix.util.FlxPhysixUtil;
 class PlayState extends FlxState
 {
 	var s:FlxSprite;
+	
 	override public function create()
 	{
 
