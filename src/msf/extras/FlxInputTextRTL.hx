@@ -1,7 +1,7 @@
 package msf.extras;
 
 import flixel.FlxBasic;
-import msf.util.FlxStringCodeIterator;
+import msf.util.FlxStringIterator;
 import flixel.text.FlxText.FlxTextAlign;
 import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;

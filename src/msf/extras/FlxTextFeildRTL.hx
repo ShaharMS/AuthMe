@@ -10,6 +10,7 @@ import openfl.text.TextField;
  */
 class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
     
+	var format = new openfl.text.TextFormat(null, 60, 0xFFFFFF);
 
     public function new(Width:Int = 500) {
         super();
@@ -21,7 +22,6 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
 		textLayout.direction = RIGHT_TO_LEFT;
 		textLayout.script = HEBREW;
 		textLayout.language = "he";
-        this.
 		Reflect.setField(Reflect.field(this, "__textEngine"), "__textLayout", textLayout);
     }
 

@@ -48,11 +48,7 @@ class FlxHebrew {
 		#if sys
 
 		#elseif js
-		var httpInstance = new HttpJs(URL);
-		httpInstance.request();
-		httpInstance.onData = (data) -> {
-			trace(data);
-		}
+		
 		#elseif flash
 
 		#end
