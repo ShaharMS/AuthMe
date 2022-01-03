@@ -101,8 +101,8 @@ class FlxUrlUtil {
 		#elseif flash
 		Lib.getURL(new URLRequest(url), target);
 		#elseif android
-		var openURL = JNI.createStaticMethod("org/haxe/lime/GameActivity", "openURL", "(Ljava/lang/String;Ljava/lang/String;)V");
-		openURL(url, target);
+		//var openURL = JNI.createStaticMethod("org/haxe/lime/GameActivity", "openURL", "(Ljava/lang/String;Ljava/lang/String;)V");
+		//openURL(url, target);li
 		#elseif (lime_cffi && !macro)
 		NativeCFFI.lime_system_open_url(url, target);
 		#end

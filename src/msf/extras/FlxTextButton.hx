@@ -38,8 +38,9 @@ class FlxTextButton extends FlxText {
     
     override public function update(elapsed:Float) {
         super.update(elapsed);
-        
+        #if FLX_MOUSE
         if(FlxG.mouse.overlaps(this) && FlxG.mouse.pressed)
+        
         {    
             status = FlxButton.PRESSED;
         }
@@ -52,11 +53,23 @@ class FlxTextButton extends FlxText {
         {
             status = FlxButton.NORMAL;
         }
+		if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased) if (buttonActive = true) OnClick();
+		#end
+        #if FLX_TOUCH
+        for (touch in FlxG.touches.list) {
+			if (touch.overlaps(this))
+			{
+				status = FlxButton.PRESSED;
+			}
+			else
+			{
+				status = FlxButton.NORMAL;
+			}
+            if (touch.overlaps(this) && touch.justReleased) if (buttonActive = true) OnClick();
+        }
+        #end
         
         
-        if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased)
-            if (buttonActive = true)
-                OnClick();
     }
 
 
