@@ -1,6 +1,5 @@
 package msf.extras;
 
-import msf.util.FlxUrlUtil;
 import flixel.ui.FlxButton;
 import flixel.FlxG;
 import flixel.text.FlxText;
@@ -21,10 +20,10 @@ class FlxTextButton extends FlxText {
     public function new(x:Float = 0, y:Float = 0, size:Int = 40, color:Int = FlxColor.WHITE,  text:String = "" ,?font:String = "assets/fonts/OpenSans.ttf", OnClick:Void -> Void) {
         super(x,y);
         this.OnClick = OnClick;
-        super.color = color;
-        super.size = size;
-        super.text = text;
-        super.font = font;
+        this.color = color;
+        this.size = size;
+        this.text = text;
+        this.font = font;
         
     }
     public function enable() {
@@ -55,7 +54,7 @@ class FlxTextButton extends FlxText {
         }
 		if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased) if (buttonActive = true) OnClick();
 		#end
-        #if FLX_TOUCH
+        #if mobile
         for (touch in FlxG.touches.list) {
 			if (touch.overlaps(this))
 			{
