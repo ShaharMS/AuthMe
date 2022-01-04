@@ -1,5 +1,5 @@
 package msf.extras;
-
+#if FLX_KEYBOARD
 import flixel.FlxBasic;
 import flixel.text.FlxText.FlxTextAlign;
 import flixel.addons.ui.FlxInputText;
@@ -171,7 +171,7 @@ class FlxInputTextRTL extends FlxInputText
 		trace('trying to map $charCode');
 		return charMap[charCode];
 	}
-
+	#if FLX_KEYBOARD
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (hasFocus) {
@@ -180,6 +180,7 @@ class FlxInputTextRTL extends FlxInputText
 			}
 		}
 	}
+	#end
 }
 
 private final class ExtraUtils extends FlxBasic {
@@ -207,3 +208,4 @@ private final class ExtraUtils extends FlxBasic {
 	}
 
 }
+#end

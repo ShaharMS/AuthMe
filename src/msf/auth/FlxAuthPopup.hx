@@ -137,9 +137,10 @@ class FlxAuthPopup extends FlxSubState {
 
     override public function update(elapsed:Float) {
         super.update(elapsed);
-
+        #if FLX_KEYBOARD
         if (FlxG.keys.pressed.TAB)
             pin.passwordmode = false;
+        #end
     }
     
     

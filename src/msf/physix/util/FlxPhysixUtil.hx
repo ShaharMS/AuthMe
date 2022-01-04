@@ -2,9 +2,7 @@ package msf.physix.util;
 
 import flixel.FlxSprite;
 import flixel.FlxG;
-import flixel.FlxObject;
 import flixel.group.FlxGroup;
-import flixel.FlxState;
 
 import msf.physix.FlxPhysixEngine.FlxPhysixArea;
 using msf.physix.util.FlxPhysixUtil;

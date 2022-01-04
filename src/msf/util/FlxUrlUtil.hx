@@ -93,19 +93,6 @@ class FlxUrlUtil {
         if (~/^https?:\/\//.match(path))
             path.remove('https://');
 
-        #if desktop
-		//openFile(url);
-		#elseif (js && html5)
-		Browser.window.open(path, "_blank");
-		#elseif flash
-		Lib.getURL(new URLRequest(url), target);
-		#elseif android
-		//var openURL = JNI.createStaticMethod("org/haxe/lime/GameActivity", "openURL", "(Ljava/lang/String;Ljava/lang/String;)V");
-		//openURL(url, target);li
-		#elseif (lime_cffi && !macro)
-		NativeCFFI.lime_system_open_url(url, target);
-		#end
-        
         log.save(path);
         return path;
     }
