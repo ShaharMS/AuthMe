@@ -3,9 +3,8 @@ package msf.util;
 #if js
 import js.Browser;
 #end
-import openfl.net.URLRequest;
-import openfl.Lib;
 import flixel.FlxG;
+
 using StringTools;
 using flixel.util.FlxStringUtil;
 

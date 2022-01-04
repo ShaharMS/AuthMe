@@ -1,7 +1,6 @@
 package msf.extras;
 
 import flixel.util.FlxColor;
-import openfl.events.Event;
 import flixel.FlxG;
 import flixel.FlxSprite;
 /**

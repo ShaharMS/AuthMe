@@ -1,7 +1,6 @@
 package msf.extras;
 
 import flixel.FlxG;
-import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import openfl.text.TextField;
 import openfl.text._internal.TextLayout;

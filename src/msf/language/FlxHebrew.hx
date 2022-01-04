@@ -1,8 +1,5 @@
 package msf.language;
 
-import haxe.http.HttpJs;
-import haxe.http.HttpBase;
-
 class FlxHebrew {
 
 	/**
