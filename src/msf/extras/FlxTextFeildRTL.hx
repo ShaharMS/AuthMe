@@ -36,8 +36,9 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
 		Reflect.setField(Reflect.field(this, "__textEngine"), "__textLayout", textLayout);
     }
 
-    public function addToState() {
+    public function addToState():FlxTextFeildRTL {
         FlxG.addChildBelowMouse(this);
+        return this;
     }
 
     public function kill() {
