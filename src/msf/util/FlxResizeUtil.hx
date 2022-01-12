@@ -24,32 +24,31 @@ class FlxResizeUtil {
 		}
         text.size += sizeOffset;
         text.updateHitbox();
-        trace('the current size is ' + text.size);
 
         return text.size;
     }
 
     public static function resizeSprite(sprite:FlxSprite, accurate:Bool = false) {
         
-        if (sprite.antialiasing = false) sprite.antialiasing = true;
+        if (!sprite.antialiasing) sprite.antialiasing = true;
 
 		while (sprite.width + sprite.x > FlxG.width)
 		{
-			if (accurate = true) sprite.scale.add(0.001, 0.001);
+			if (accurate) sprite.scale.add(0.001, 0.001);
             else sprite.scale.add(0.01, 0.01);
 			sprite.updateHitbox();
 		}
 
 		while (sprite.width + sprite.x < FlxG.width)
 		{
-			if (accurate = true) sprite.scale.add(-0.001, -0.001);
+			if (accurate) sprite.scale.add(-0.001, -0.001);
 			else sprite.scale.add(-0.01, -0.01);
 			sprite.updateHitbox();
 		}
 
 		while (sprite.height + sprite.y > FlxG.height)
 		{
-			if (accurate = true)
+			if (accurate)
 				sprite.scale.add(0.001, 0.001);
 			else
 				sprite.scale.add(0.01, 0.01);
@@ -58,14 +57,12 @@ class FlxResizeUtil {
 
 		while (sprite.height + sprite.y < FlxG.height)
 		{
-			if (accurate = true)
+			if (accurate)
 				sprite.scale.add(-0.001, -0.001);
 			else
 				sprite.scale.add(-0.01, -0.01);
 			sprite.updateHitbox();
 		}
-
-		trace('the current size is ' + sprite.width + ' , ' + sprite.height);
     }
 
 }
