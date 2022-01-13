@@ -1,5 +1,6 @@
 package msf.extras;
 
+import openfl.display.BitmapData;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.math.FlxMatrix;
@@ -20,12 +21,35 @@ import msf.extras.FlxInputTextRTL;
  */
 class FlxSuperText extends FlxSpriteGroup {
 
-    public function new(x:Float, y:Float, length:Int, size:Int) {
-        super(x,y);
-        
-    }
+	var internalTextFeild:TextField;
+	var resizeOutline:FlxOutlineEffect;
+	var frontSprite:FlxSprite;
+	var bmp:BitmapData;
 
-    public override function update(elapsed:Float) {
-        super.update(elapsed);
-    }
+	public function new(x:Float, y:Float, length:Int, size:Int)
+	{
+		super(x, y);
+		internalTextFeild = new TextField();
+		internalTextFeild.x = x;
+		internalTextFeild.y = y;
+		internalTextFeild.defaultTextFormat = new TextFormat(null, size, 0xFFFFFF);
+		internalTextFeild.type = TextFieldType.INPUT;
+		internalTextFeild.background = true;
+        internalTextFeild.width = length;
+		internalTextFeild.backgroundColor = 0x000000;
+		frontSprite = new FlxSprite();
+		frontSprite.width = length;
+		frontSprite.height = internalTextFeild.height;
+		add(frontSprite);
+
+		bmp = new BitmapData(Std.int(internalTextFeild.width), Std.int(internalTextFeild.height), false, 0x000000);
+	}
+
+	override function draw()
+	{
+		super.draw();
+		bmp.draw(internalTextFeild);
+		frontSprite.loadGraphic(bmp);
+
+	}
 }

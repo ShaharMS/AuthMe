@@ -21,7 +21,7 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
     /**
      * The sprite you should add to states/FlxGroups.
      */
-    public var textFieldSprite(get, null):FlxSprite;
+    public var textFieldSprite(default, null):FlxSprite;
 
     var textLayout:TextLayout;
 
@@ -33,15 +33,30 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
 		selectable = true;
 		type = INPUT;	
 		width = Width;
-		//textLayout = new TextLayout();
-		//textLayout.direction = RIGHT_TO_LEFT;
-		//textLayout.script = HEBREW;
-		//textLayout.language = "he";
-		//Reflect.setField(Reflect.field(this, "__textEngine"), "__textLayout", textLayout);
+		textLayout = new TextLayout();
+		textLayout.direction = RIGHT_TO_LEFT;
+		textLayout.script = HEBREW;
+		textLayout.language = "he";
+		Reflect.setField(Reflect.field(this, "__textEngine"), "__textLayout", textLayout);
         
-        
+		bmp = new BitmapData(Std.int(width), Std.int(height), false, 0x000000);
+		addEventListener(Event.CHANGE, redrawText);
+
+		textFieldSprite = new FlxSprite();
+		textFieldSprite.width = width;
+		textFieldSprite.height = height;
+
+		textFieldSprite.loadGraphic(bmp, false, 0, 0, true);
         
     }
+
+	function redrawText(e:Event)
+	{
+		trace("redraw");
+		bmp.fillRect(bmp.rect, 0x0000);
+		bmp.draw(this);
+		textFieldSprite.loadGraphic(bmp);
+	}
 
     public function addToState():FlxTextFeildRTL {
         FlxG.addChildBelowMouse(this);
@@ -72,13 +87,5 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
 	@:noCompletion function set_health(value:Float):Float {
 		if (value <= 0) kill();
         return value;
-	}
-
-	function get_textFieldSprite():FlxSprite {
-		var t = new FlxSprite();
-		var bmp = new BitmapData(Std.int(width), Std.int(height), false, 0x000000);
-		bmp.draw(this);
-		t.loadGraphic(bmp);
-        return t;
 	}
 }
