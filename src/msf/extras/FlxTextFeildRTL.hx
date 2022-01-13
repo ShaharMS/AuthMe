@@ -1,13 +1,12 @@
 package msf.extras;
 
+import openfl.display.BitmapData;
+import openfl.events.Event;
+import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import openfl.text.TextField;
 import openfl.text._internal.TextLayout;
-private enum Languages {
-    Hebrew;
-    Arabic;
-}
 /**
  * Extends TextFeild to support flixel & RTL. displays over all other objects
  */
@@ -19,9 +18,14 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
 
     public var health(default, set):Float = 100;
 
-    @:isVar public var language(get, set):Languages = Hebrew;
+    /**
+     * The sprite you should add to states/FlxGroups.
+     */
+    public var textFieldSprite(get, null):FlxSprite;
 
     var textLayout:TextLayout;
+
+    var bmp:BitmapData;
 
     public function new(Width:Int = 500) {
         super();
@@ -29,11 +33,14 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
 		selectable = true;
 		type = INPUT;	
 		width = Width;
-		textLayout = new TextLayout();
-		textLayout.direction = RIGHT_TO_LEFT;
-		textLayout.script = HEBREW;
-		textLayout.language = "he";
-		Reflect.setField(Reflect.field(this, "__textEngine"), "__textLayout", textLayout);
+		//textLayout = new TextLayout();
+		//textLayout.direction = RIGHT_TO_LEFT;
+		//textLayout.script = HEBREW;
+		//textLayout.language = "he";
+		//Reflect.setField(Reflect.field(this, "__textEngine"), "__textLayout", textLayout);
+        
+        
+        
     }
 
     public function addToState():FlxTextFeildRTL {
@@ -67,20 +74,11 @@ class FlxTextFeildRTL extends TextField implements IFlxDestroyable {
         return value;
 	}
 
-	function get_language():Languages {
-		return if (textLayout.script == TextScript.HEBREW) Languages.Hebrew else Languages.Arabic;
-	}
-
-	function set_language(value:Languages):Languages {
-		if (value == Hebrew) {
-            textLayout.script = TextScript.HEBREW;
-            textLayout.language = "he";
-        }
-        if (value == Arabic) {
-            textLayout.script = TextScript.ARABIC;
-            textLayout.language = "ar";
-        }
-
-        return value;
+	function get_textFieldSprite():FlxSprite {
+		var t = new FlxSprite();
+		var bmp = new BitmapData(Std.int(width), Std.int(height), false, 0x000000);
+		bmp.draw(this);
+		t.loadGraphic(bmp);
+        return t;
 	}
 }
