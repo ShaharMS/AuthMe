@@ -12,17 +12,17 @@ class FlxResizeUtil {
     public static function resizeText(text:FlxText, sizeOffset:Int = 0):Int {
       
         
-        while (text.width > FlxG.width)
+        while (text.width > FlxG.width - sizeOffset)
         {
             text.size -= 1;
 
         }
 
-		while (text.width < FlxG.width)
+		while (text.width < FlxG.width - sizeOffset)
 		{
 			text.size += 1;
 		}
-        text.size += sizeOffset;
+        
         text.updateHitbox();
 
         return text.size;
