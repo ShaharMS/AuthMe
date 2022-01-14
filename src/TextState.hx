@@ -1,5 +1,6 @@
 package;
 
+import msf.extras.FlxInputTextRTL;
 import flixel.FlxG;
 import msf.extras.FlxTextFeildRTL;
 import msf.extras.FlxSuperText;
@@ -10,7 +11,7 @@ class TextState extends FlxState{
 	var t = new FlxTextFeildRTL();
     public override function create() {
         super.create();
-        t.addToState();
+        add(new FlxInputTextRTL(0,20nished, 500, "", 40));
         
     }
 

@@ -13,6 +13,12 @@ class FlxInputTextRTL extends FlxInputText
 {
 
 	public var extraUtils:ExtraUtils;
+	/**
+	 * letter hack to avoid placing letters incorrectly
+	 */
+	var __hebrewOffset = 0;
+
+	public var isRtl(default, null):Bool;
 
 	/**
 	 * @param	X				The X position of the text.
@@ -24,31 +30,32 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
-		alignment = FlxTextAlign.RIGHT;
+		if (startEnglish) {isRtl = false; alignment = LEFT;} else {isRtl = true; alignment = RIGHT;}
+
 		extraUtils = new ExtraUtils(this);
+		wordWrap = true;
 
 	}
 
 	final function pressSpace()
 	{
+		#if windows
+		if (isRtl)
+		{
+			__hebrewOffset++;
+			caretIndex -= __hebrewOffset;
+		}
+		else
+		{
+			caretIndex += __hebrewOffset;
+			__hebrewOffset = 0;
+		}
+		#end
 		text = insertSubstring(text, " ", caretIndex);
-	}
-
-	final function pressPeriod()
-	{
-		text = insertSubstring(text, ".", caretIndex);
-	}
-
-	final function pressQMark()
-	{
-		text = insertSubstring(text, "?", caretIndex);
-	}
-
-	final function pressComma()
-	{
-		text = insertSubstring(text, ",", caretIndex);
+		caretIndex = text.length;
+		text = text;
 	}
 	
 	override function set_hasFocus(newFocus:Bool):Bool {
@@ -73,30 +80,38 @@ class FlxInputTextRTL extends FlxInputText
 	}
 	
 	override function onKeyDown(e:KeyboardEvent) {
+
+		if (e.altKey && e.shiftKey) {
+			isRtl = !isRtl;
+		}
 		// some of this is from the overriden void but the actual char code entry is altered
 		var key:Int = e.keyCode;
 
 		if (hasFocus) 
 		{
 			var overridenString = mapCharCode(e.charCode);
-			if (overridenString == null && key != 8 && key != 46 && key != 36 && key != 35) 
+			if (overridenString == null && key != 8 && key != 46 && key != 36 && key != 35 && key != 32) 
 			{
 				// not mapped, do default handling
 				super.onKeyDown(e);
 			}
-			// delete is swapped with backspace to give the correct deletion effect
-			else if (key == 46) {
+			// backspace key
+			else if (key == 8) {
 				if (caretIndex > 0) {
 					caretIndex--;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(FlxInputText.BACKSPACE_ACTION);
 				}
 			}
-			// The same with backspace:
-			else if (key == 8) {
+			// delete key
+			else if (key == 46) {
+				#if windows 
+				if (isRtl && __hebrewOffset > 0) __hebrewOffset--;
+				#end
 				if (text.length > 0 && caretIndex < text.length) {
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(FlxInputText.DELETE_ACTION);
+					text = text;
 				}
 			}
 			//end key
@@ -117,8 +132,21 @@ class FlxInputTextRTL extends FlxInputText
 
 
 				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {
+					#if windows
+					if (isRtl)
+					{
+						__hebrewOffset++;
+						caretIndex -= __hebrewOffset;
+					}
+					else
+					{
+						caretIndex += __hebrewOffset;
+						__hebrewOffset = 0;
+					}
+					#end
 					text = insertSubstring(text, newText, caretIndex);
-					caretIndex = 0;
+					caretIndex = text.length;				
+					text = text; // forces scroll update
 					onChange(FlxInputText.INPUT_ACTION);
 				}
 			}
@@ -164,12 +192,50 @@ class FlxInputTextRTL extends FlxInputText
 		96 => ";",
 	];
 
+	var englishMap:Map<Int, String> = [
+		113 => "q",
+		119 => "w",
+		101 => "e",
+		114 => "r",
+		116 => "t",
+		121 => "y",
+		117 => "u",
+		105 => "i",
+		111 => "o",
+		112 => "p",
+		97 => "a",
+		115 => "s",
+		100 => "d",
+		103 => "g",
+		104 => "h",
+		106 => "j",
+		107 => "k",
+		108 => "l",
+		59 => ";",
+		122 => "z",
+		120 => "x",
+		99 => "c",
+		118 => "v",
+		98 => "b",
+		110 => "n",
+		109 => "m",
+		60 => '>',
+		62 => "<",
+		44 => ".",
+		46 => ",",
+		102 => "f",
+		32 => "",
+		47 => "/",
+		63 => "?",
+		39 => "'",
+		96 => "`",
+	];
+
 
 
 	function mapCharCode(charCode:Int):String
 	{
-		trace('trying to map $charCode');
-		return charMap[charCode];
+		return if (isRtl) charMap[charCode] else englishMap[charCode];
 	}
 	#if FLX_KEYBOARD
 	public override function update(elapsed:Float) {
