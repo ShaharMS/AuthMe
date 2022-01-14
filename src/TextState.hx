@@ -11,7 +11,7 @@ class TextState extends FlxState{
 	var t = new FlxTextFeildRTL();
     public override function create() {
         super.create();
-        add(new FlxInputTextRTL(0,20nished, 500, "", 40));
+        add(new FlxInputTextRTL(0,20, 500, "", 40));
         
     }
 
