@@ -41,20 +41,9 @@ class FlxInputTextRTL extends FlxInputText
 
 	final function pressSpace()
 	{
-		#if windows
-		if (isRtl)
-		{
-			__hebrewOffset++;
-			caretIndex -= __hebrewOffset;
-		}
-		else
-		{
-			caretIndex += __hebrewOffset;
-			__hebrewOffset = 0;
-		}
-		#end
+		caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length;
 		text = insertSubstring(text, " ", caretIndex);
-		caretIndex = text.length;
+		caretIndex = if (!isRtl) caretIndex = text.length else caretIndex;	
 		text = text;
 	}
 	
@@ -83,6 +72,8 @@ class FlxInputTextRTL extends FlxInputText
 
 		if (e.altKey && e.shiftKey) {
 			isRtl = !isRtl;
+			caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length + 1;
+
 		}
 		// some of this is from the overriden void but the actual char code entry is altered
 		var key:Int = e.keyCode;
@@ -96,7 +87,7 @@ class FlxInputTextRTL extends FlxInputText
 				super.onKeyDown(e);
 			}
 			// backspace key
-			else if (key == 8) {
+			else if (key == if (isRtl) 46 else 8) {
 				if (caretIndex > 0) {
 					caretIndex--;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
@@ -104,10 +95,7 @@ class FlxInputTextRTL extends FlxInputText
 				}
 			}
 			// delete key
-			else if (key == 46) {
-				#if windows 
-				if (isRtl && __hebrewOffset > 0) __hebrewOffset--;
-				#end
+			else if (key == if (isRtl) 8 else 46) {
 				if (text.length > 0 && caretIndex < text.length) {
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(FlxInputText.DELETE_ACTION);
@@ -132,20 +120,10 @@ class FlxInputTextRTL extends FlxInputText
 
 
 				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {
-					#if windows
-					if (isRtl)
-					{
-						__hebrewOffset++;
-						caretIndex -= __hebrewOffset;
-					}
-					else
-					{
-						caretIndex += __hebrewOffset;
-						__hebrewOffset = 0;
-					}
-					#end
+					caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length;			
 					text = insertSubstring(text, newText, caretIndex);
-					caretIndex = text.length;				
+					caretIndex = if (!isRtl) caretIndex = text.length else caretIndex;	
+	
 					text = text; // forces scroll update
 					onChange(FlxInputText.INPUT_ACTION);
 				}
@@ -221,8 +199,8 @@ class FlxInputTextRTL extends FlxInputText
 		109 => "m",
 		60 => '>',
 		62 => "<",
-		44 => ".",
-		46 => ",",
+		44 => ",",
+		46 => ".",
 		102 => "f",
 		32 => "",
 		47 => "/",
