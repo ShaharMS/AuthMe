@@ -6,6 +6,8 @@ import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxColor;
 import flixel.FlxG;
+
+using flixel.util.FlxStringUtil;
 /**
  * FlxInputText with support for RTL languages.
  */
@@ -14,9 +16,14 @@ class FlxInputTextRTL extends FlxInputText
 
 	public var extraUtils:ExtraUtils;
 	/**
-	 * letter hack to avoid placing letters incorrectly
+	 * word hack to know where to place the caret on language switch
 	 */
-	var __hebrewOffset = 0;
+	var __rtlOffset = 0;
+
+	/**
+	 * another hack to allow RTL to LTR convertion to be smoother by fixing the caret position after the mouse moves the caret
+	 */
+	var __lastCaretPosition = 0;
 
 	public var isRtl(default, null):Bool;
 
@@ -52,7 +59,10 @@ class FlxInputTextRTL extends FlxInputText
 			if (hasFocus != newFocus) {
 				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
 				caret.visible = true;
-				caretIndex = 0;
+				caretIndex = text.length;
+				
+			} else {
+				__rtlOffset = __lastCaretPosition - getCaretIndex();
 			}
 		} else {
 			// Graphics
@@ -70,21 +80,35 @@ class FlxInputTextRTL extends FlxInputText
 	
 	override function onKeyDown(e:KeyboardEvent) {
 
+		
 		if (e.altKey && e.shiftKey) {
 			isRtl = !isRtl;
-			caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length + 1;
-
+			caretIndex = if (!isRtl) __rtlOffset + caretIndex else caretIndex;
+			return;
 		}
+		__lastCaretPosition = caretIndex;
 		// some of this is from the overriden void but the actual char code entry is altered
 		var key:Int = e.keyCode;
 
 		if (hasFocus) 
 		{
 			var overridenString = mapCharCode(e.charCode);
-			if (overridenString == null && key != 8 && key != 46 && key != 36 && key != 35 && key != 32) 
+			if (e.altKey || (e.shiftKey && overridenString == null)) return;
+			if (overridenString == null && !~/37|39|8|46|36|35|32/.match(key + "")) 
 			{
 				// not mapped, do default handling
 				super.onKeyDown(e);
+			}
+			else if (e.keyCode == 13) return;
+			else if (~/37|39/.match(key + "")) {
+				//left arrow
+				if (key == 37) {
+					__rtlOffset++;
+					caretIndex--;
+				} else {
+					__rtlOffset--;
+					caretIndex++;
+				}
 			}
 			// backspace key
 			else if (key == if (isRtl) 46 else 8) {
@@ -120,9 +144,16 @@ class FlxInputTextRTL extends FlxInputText
 
 
 				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {
+					#if html5
+					if (isRtl) {
+						__rtlOffset++;
+						text = insertSubstring(text, newText, caretIndex - 1);
+					}
+					#else
 					caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length;			
 					text = insertSubstring(text, newText, caretIndex);
 					caretIndex = if (!isRtl) caretIndex = text.length else caretIndex;	
+					#end
 	
 					text = text; // forces scroll update
 					onChange(FlxInputText.INPUT_ACTION);
@@ -160,8 +191,8 @@ class FlxInputTextRTL extends FlxInputText
 		109 => "צ",
 		60 => '>',
 		62 => "<",
-		44 => "ץ",
-		46 => "ת",
+		#if hl 46 #else 44 => "ץ",
+		#if hl 44 #else 46 => "ת",
 		102 => "כ",
 		32 => "",
 		47 => ".",
