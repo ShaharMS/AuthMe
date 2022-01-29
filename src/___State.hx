@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.ui.FlxInputText;
 import flixel.system.FlxAssets;
 import msf.extras.FlxInputTextRTL;
 import flixel.FlxState;

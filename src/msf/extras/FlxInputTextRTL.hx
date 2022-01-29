@@ -1,6 +1,7 @@
 package msf.extras;
 
-import flixel.FlxBasic;
+import lime.ui.KeyCode;
+import openfl.Lib;
 import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxColor;
@@ -13,22 +14,16 @@ using flixel.util.FlxStringUtil;
  */
 class FlxInputTextRTL extends FlxInputText
 {
+
+	var pressTime:Int = 0;
+
+	var __rtlOffset:Int = 0;
 	/**
 	 * the input with which were going to capture key presses.
 	 */
 	var textInput:js.html.InputElement;
-	/**
-	 * word hack to know where to place the caret on language switch
-	 */
-	var __rtlOffset = 0;
 
-	/**
-	 * another hack to allow RTL to LTR convertion to be smoother by fixing the caret position after the mouse moves the caret
-	 */
-	var __lastCaretPosition = 0;
-
-	public var isRtl(default, null):Bool;
-
+	var keyCode:Int;
 	/**
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
@@ -42,11 +37,10 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK,
 			BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
-		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
+		super(X, Y, Width, Text, size);
 		wordWrap = true;
 		getInput();
 	}
-
 	override function set_hasFocus(newFocus:Bool):Bool
 	{
 		if (newFocus)
@@ -55,11 +49,7 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
 				caret.visible = true;
-				caretIndex = text.length;
-			}
-			else
-			{
-				__rtlOffset = __lastCaretPosition - getCaretIndex();
+				caretIndex = 0;
 			}
 		}
 		else
@@ -78,12 +68,9 @@ class FlxInputTextRTL extends FlxInputText
 		}
 		return hasFocus = newFocus;
 	}
-
-	override function onKeyDown(e:KeyboardEvent)
-	{
+	override function onKeyDown(e:flash.events.KeyboardEvent) {
 		return;
 	}
-
 	function getInput()
 	{
 		textInput = cast js.Browser.document.createElement('input');
@@ -99,17 +86,10 @@ class FlxInputTextRTL extends FlxInputText
 		js.Browser.document.body.appendChild(textInput);
 		textInput.addEventListener('input', (e:js.html.InputEvent) ->
 		{
-			if (hasFocus) {
-				if (e.which == 8) {
-					if (caretIndex > 0)
-					{
-						caretIndex--;
-						text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-						onChange(FlxInputText.BACKSPACE_ACTION);
-					}
-				}
-				var char = textInput.value;
-				text += char;
+			if (caretIndex < 0) caretIndex = 0;
+			if (textInput.value.length > 0 && (maxLength == 0 || (text.length + textInput.value.length) < maxLength)) {
+				text = insertSubstring(text, textInput.value, caretIndex);
+				caretIndex++;
 				text = text;
 			}
 			
@@ -122,10 +102,79 @@ class FlxInputTextRTL extends FlxInputText
 		textInput.select();
 	}
 
+	function typeChar(?char:String = "") {
+		if (char == "bsp") {
+			caretIndex--;
+			text = text.substring(0, caretIndex);
+			onChange(FlxInputText.BACKSPACE_ACTION);
+			text = text;
+			Timer.delay(() -> {
+				var t:Timer;
+				t = new Timer(16);
+				t.run = () -> {
+					if(FlxG.keys.pressed.BACKSPACE) {
+						caretIndex--;
+						text = text.substring(0, caretIndex);
+						onChange(FlxInputText.BACKSPACE_ACTION);
+						text = text;
+					} else t.stop();
+				};
+			}, 500);
+		}
+		else if (char == "del") {
+			if (text.length > 0 && caretIndex < text.length)
+			{
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				onChange(FlxInputText.DELETE_ACTION);
+				text = text;
+				Timer.delay(() -> {
+					var t:Timer;
+					t = new Timer(16);
+					t.run = () -> {
+						if(FlxG.keys.pressed.DELETE) {
+							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+							onChange(FlxInputText.DELETE_ACTION);
+							text = text;
+						} else t.stop();
+					};
+				}, 500);
+			}
+		}
+		else if (char == " ") {
+			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
+				text = insertSubstring(text, char, caretIndex);
+				caretIndex++;
+				text = text;
+			}			
+			Timer.delay(() -> {
+				var t:Timer;
+				t = new Timer(16);
+				t.run = () -> {
+					if(FlxG.keys.pressed.BACKSPACE) {
+						if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
+							text = insertSubstring(text, char, caretIndex);
+							caretIndex++;
+							text = text;
+						}						
+					} else t.stop();
+				};
+			}, 500);
+		}
+	}
+
 	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		updateFocus();
+		if (hasFocus) {
+			if (FlxG.keys.justPressed.SPACE) typeChar(" ");
+			if (FlxG.keys.justPressed.BACKSPACE) typeChar("bsp");
+			if (FlxG.keys.justPressed.DELETE) typeChar("del"); 
+			if (FlxG.keys.justPressed.LEFT) if (caretIndex > 0) caretIndex --;
+			if (FlxG.keys.justPressed.RIGHT) if (caretIndex < text.length) caretIndex ++;
+			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
+			if (FlxG.keys.justPressed.END) caretIndex = text.length;
+		}
 	}
 }
 #else
@@ -134,15 +183,6 @@ class FlxInputTextRTL extends FlxInputText
  */
 class FlxInputTextRTL extends FlxInputText 
 {
-	/**
-	 * word hack to know where to place the caret on language switch
-	 */
-	var __rtlOffset = 0;
-
-	/**
-	 * another hack to allow RTL to LTR convertion to be smoother by fixing the caret position after the mouse moves the caret
-	 */
-	var __lastCaretPosition = 0;
 
 	public var isRtl(default, null):Bool;
 
@@ -158,8 +198,8 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
-		if (startEnglish) {isRtl = false; alignment = LEFT;} else {isRtl = true; alignment = RIGHT;}
 		wordWrap = true;
+		tryInput();
 	}
 
 	final function pressSpace()
@@ -177,8 +217,6 @@ class FlxInputTextRTL extends FlxInputText
 				caret.visible = true;
 				caretIndex = text.length;
 				
-			} else {
-				__rtlOffset = __lastCaretPosition - getCaretIndex();
 			}
 		} else {
 			// Graphics
@@ -196,12 +234,6 @@ class FlxInputTextRTL extends FlxInputText
 	
 	override function onKeyDown(e:KeyboardEvent) {
 
-		if (e.altKey && e.shiftKey) {
-			isRtl = !isRtl;
-			caretIndex = if (!isRtl) __rtlOffset + caretIndex else caretIndex;
-			return;
-		}
-		__lastCaretPosition = caretIndex;
 		// some of this is from the overriden void but the actual char code entry is altered
 		var key:Int = e.keyCode;
 
@@ -214,19 +246,17 @@ class FlxInputTextRTL extends FlxInputText
 				// not mapped, do default handling
 				super.onKeyDown(e);
 			}
-			else if (e.keyCode == 13) return;
+			else if (key == 13) return;
 			else if (~/37|39/.match(key + "")) {
 				//left arrow
 				if (key == 37) {
-					__rtlOffset++;
 					caretIndex--;
 				} else {
-					__rtlOffset--;
 					caretIndex++;
 				}
 			}
 			// backspace key
-			else if (key == if (isRtl) 46 else 8) {
+			else if (key == 8) {
 				if (caretIndex > 0) {
 					caretIndex--;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
@@ -234,7 +264,7 @@ class FlxInputTextRTL extends FlxInputText
 				}
 			}
 			// delete key
-			else if (key == if (isRtl) 8 else 46) {
+			else if (key == 46) {
 				if (text.length > 0 && caretIndex < text.length) {
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(FlxInputText.DELETE_ACTION);
@@ -258,10 +288,9 @@ class FlxInputTextRTL extends FlxInputText
 				var newText:String = overridenString;
 
 
-				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {
-					caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length;			
+				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {		
 					text = insertSubstring(text, newText, caretIndex);
-					caretIndex = if (!isRtl) caretIndex = text.length else caretIndex;	
+					caretIndex++;
 	
 					text = text; // forces scroll update
 					onChange(FlxInputText.INPUT_ACTION);
@@ -269,44 +298,20 @@ class FlxInputTextRTL extends FlxInputText
 			}
 		}
 	}
-	#if js
-	var textInput:js.html.InputElement;
 
-	function getInput()
-	{
-		textInput = cast js.Browser.document.createElement('input');
-		textInput.type = 'text';
-		textInput.style.position = 'absolute';
-		textInput.style.opacity = "0";
-		textInput.style.color = "transparent";
-		textInput.value = String.fromCharCode(127);
-		textInput.style.left = "0px";
-		textInput.style.top = "50%";
-		untyped (textInput.style).pointerEvents = 'none';
-		textInput.style.zIndex = "-10000000";
-		js.Browser.document.body.appendChild(textInput);
-		textInput.addEventListener('input', (e:js.html.InputEvent) -> {
-			var text = textInput.value;
-		}, true);
+	function tryInput() {
+		Lib.application.window.onKeyDown.add((code, modifier) -> {
+			trace(code);
+		});
 	}
-
-	function updateFocus()
-	{
-		textInput.focus();
-		textInput.select();
-	}
-	#end
-
-	
 
 
 
 	function mapCharCode(charCode:Int):String
 	{
-		return if (isRtl) FlxCharMaps.hebrewKeyMap[charCode] else FlxCharMaps.englishKeyMap[charCode];
+		return "‏" + FlxCharMaps.hebrewKeyMap[charCode];
 	}
-	
-	#if FLX_KEYBOARD
+
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 
@@ -316,11 +321,8 @@ class FlxInputTextRTL extends FlxInputText
 			}
 		}
 
-		#if js
-		updateFocus();
-		#end
 	}
-	#end
+
 
 	
 }
