@@ -185,9 +185,9 @@ class FlxInputTextRTL extends FlxInputText
  */
 class FlxInputTextRTL extends FlxInputText 
 {
+	var lastLetter:String;
 
-	public var isRtl(default, null):Bool;
-
+	var __rtlOffset:Int = 0;
 	/**
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
@@ -201,68 +201,42 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
-		tryInput();
-	}
-
-	final function pressSpace()
-	{
-		caretIndex = if (isRtl) caretIndex-- else caretIndex = text.length;
-		text = insertSubstring(text, " ", caretIndex);
-		caretIndex = if (!isRtl) caretIndex = text.length else caretIndex;	
-		text = text;
-	}
-	
-	override function set_hasFocus(newFocus:Bool):Bool {
-		if (newFocus) {
-			if (hasFocus != newFocus) {
-				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
-				caret.visible = true;
-				caretIndex = text.length;
-				
-			}
-		} else {
-			// Graphics
-			caret.visible = false;
-			if (_caretTimer != null) {
-				_caretTimer.cancel();
-			}
-		}
-
-		if (newFocus != hasFocus) {
-			calcFrame();
-		}
-		return hasFocus = newFocus;
-	}
-	
-	override function onKeyDown(e:KeyboardEvent) {
-		return;
-	}
-
-	function tryInput() {
-		Lib.application.window.onTextInput.add((t) -> {
-			trace ("CHAR IS:");
-			trace(t);
+		Lib.application.window.onTextInput.add((te) -> {
+			if (caretIndex < 0) caretIndex = 0;
+			var t = if (te != null) te.remove("‏") else "";
 
 			if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 			{
+				if ((FlxCharMaps.rtlLetterArray.contains(t) || (t == " " && FlxCharMaps.rtlLetterArray.contains(lastLetter)))) {
+					
+				} else {
+					caretIndex ++;
+				}
 				text = insertSubstring(text, t, caretIndex);
-				caretIndex++;
 
 				text = text; // forces scroll update
+				if (te != " ") {
+					lastLetter = te;					
+				}
+
 				onChange(FlxInputText.INPUT_ACTION);
 			}
-		}, false, 1);
+		}, false, 2);
+
 		Lib.application.window.onKeyDown.add( (key, modifier) -> {
-			if (~/37|39/.match(key + ""))
+			if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
+			if (caretIndex < 0)
+				caretIndex = 0;
+			if (~/1073741904|1073741903/.match(key + ""))
 			{
 				// left arrow
-				if (key == 37)
+				if (key == 1073741904)
 				{
-					caretIndex--;
+					if (caretIndex > 0) caretIndex--;
 				}
 				else //right arrow
 				{
-					caretIndex++;
+					if (caretIndex < text.length) caretIndex++;
 				}
 			}
 			// backspace key
@@ -297,28 +271,32 @@ class FlxInputTextRTL extends FlxInputText
 				caretIndex = 0;
 				text = text; // forces scroll update
 			}
-		}, false, 2);
+		}, false, 1);
 	}
 
-
-
-	function mapCharCode(charCode:Int):String
-	{
-		return "‏" + FlxCharMaps.hebrewKeyMap[charCode];
-	}
-
-	public override function update(elapsed:Float) {
-		super.update(elapsed);
-
-		if (hasFocus) {
-			if (FlxG.keys.justPressed.SPACE) {
-				pressSpace();
+	override function set_hasFocus(newFocus:Bool):Bool {
+		if (newFocus) {
+			if (hasFocus != newFocus) {
+				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
+				caret.visible = true;
+				caretIndex = text.length;
+				
+			}
+		} else {
+			// Graphics
+			caret.visible = false;
+			if (_caretTimer != null) {
+				_caretTimer.cancel();
 			}
 		}
 
+		if (newFocus != hasFocus) {
+			calcFrame();
+		}
+		return hasFocus = newFocus;
 	}
-
-
 	
+	override function onKeyDown(e:KeyboardEvent) {}
+
 }
 #end

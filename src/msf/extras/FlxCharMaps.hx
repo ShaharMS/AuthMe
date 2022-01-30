@@ -207,7 +207,7 @@ class FlxCharMaps {
 		96 => "`",
 	];
 
-	public static var hebrewLetterArray = [
+	public static var rtlLetterArray = [
 		"ק",
 		"ר",
 		"א",

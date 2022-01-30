@@ -10,7 +10,7 @@ class ___State extends FlxState{
     public override function create() {
         super.create();
         FlxAssets.FONT_DEFAULT = "assets/data/VarelaRound.ttf";
-        add(new FlxInputTextRTL(0,20, 500, "", 40));
+        add(new FlxInputTextRTL(0,20, 800, "", 40));
         
     }
 
