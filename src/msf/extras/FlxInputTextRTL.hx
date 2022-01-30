@@ -1,7 +1,9 @@
 package msf.extras;
 
+import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
 import openfl.Lib;
+import haxe.Timer;
 import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxColor;
@@ -233,76 +235,69 @@ class FlxInputTextRTL extends FlxInputText
 	}
 	
 	override function onKeyDown(e:KeyboardEvent) {
+		return;
+	}
 
-		// some of this is from the overriden void but the actual char code entry is altered
-		var key:Int = e.keyCode;
+	function tryInput() {
+		Lib.application.window.onTextInput.add((t) -> {
+			trace ("CHAR IS:");
+			trace(t);
 
-		if (hasFocus) 
-		{
-			var overridenString = mapCharCode(e.charCode);
-			if (e.altKey || (e.shiftKey && overridenString == null)) return;
-			if (overridenString == null && !~/37|39|8|46|36|35|32/.match(key + "")) 
+			if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 			{
-				// not mapped, do default handling
-				super.onKeyDown(e);
+				text = insertSubstring(text, t, caretIndex);
+				caretIndex++;
+
+				text = text; // forces scroll update
+				onChange(FlxInputText.INPUT_ACTION);
 			}
-			else if (key == 13) return;
-			else if (~/37|39/.match(key + "")) {
-				//left arrow
-				if (key == 37) {
+		}, false, 1);
+		Lib.application.window.onKeyDown.add( (key, modifier) -> {
+			if (~/37|39/.match(key + ""))
+			{
+				// left arrow
+				if (key == 37)
+				{
 					caretIndex--;
-				} else {
+				}
+				else //right arrow
+				{
 					caretIndex++;
 				}
 			}
 			// backspace key
-			else if (key == 8) {
-				if (caretIndex > 0) {
+			else if (key == 8)
+			{
+				if (caretIndex > 0)
+				{
 					caretIndex--;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(FlxInputText.BACKSPACE_ACTION);
 				}
 			}
 			// delete key
-			else if (key == 46) {
-				if (text.length > 0 && caretIndex < text.length) {
+			else if (key == 127)
+			{
+				if (text.length > 0 && caretIndex < text.length)
+				{
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(FlxInputText.DELETE_ACTION);
 					text = text;
 				}
 			}
-			//end key
-			else if (key == 36) {
+			// end key
+			else if (key == 36)
+			{
 				caretIndex = text.length;
 				text = text; // forces scroll update
 			}
-			//home key
-			else if (key == 35) {
+			// home key
+			else if (key == 35)
+			{
 				caretIndex = 0;
 				text = text; // forces scroll update
 			}
-			//if the charCode is a typeable letter, try and insert it at the start of the LTR string,
-			//therefore being inserted correctly
-			else 
-			{
-				var newText:String = overridenString;
-
-
-				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength)) {		
-					text = insertSubstring(text, newText, caretIndex);
-					caretIndex++;
-	
-					text = text; // forces scroll update
-					onChange(FlxInputText.INPUT_ACTION);
-				}
-			}
-		}
-	}
-
-	function tryInput() {
-		Lib.application.window.onKeyDown.add((code, modifier) -> {
-			trace(code);
-		});
+		}, false, 2);
 	}
 
 
