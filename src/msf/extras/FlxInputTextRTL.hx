@@ -1,11 +1,13 @@
 package msf.extras;
-
+#if js
+import haxe.Timer;
+#else
 import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
 import openfl.Lib;
-import haxe.Timer;
-import flixel.addons.ui.FlxInputText;
 import openfl.events.KeyboardEvent;
+#end
+import flixel.addons.ui.FlxInputText;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 
@@ -70,9 +72,22 @@ class FlxInputTextRTL extends FlxInputText
 		}
 		return hasFocus = newFocus;
 	}
-	override function onKeyDown(e:flash.events.KeyboardEvent) {
-		return;
-	}
+	/**
+	   The original `onKeyDown` from `FlxInputText` is replaced with four functions - 
+	  
+	  | Function | Job |
+	  | --- | --- |
+	  | **`getInput()`** | used to set up the input element with which were going to listen to text input |
+	  | **`updateInput()`** | called every frame, selects the input element to continue listening for text input |
+	  | **`typeChar(String)`** | called when special keys (spacebar, backspace...) are pressed since `getInput()` can't listen to those |
+	  | **`update(Float)`** | called every frame, checks if one of the special keys (spacebar, backspace...) is pressed to call `typeChar(String)` |
+	 **/
+	override function onKeyDown(e:flash.events.KeyboardEvent) {}
+
+	/**
+	 * Exists to set up the input element, with which
+	 * were going to listen for text input
+	 */
 	function getInput()
 	{
 		textInput = cast js.Browser.document.createElement('input');
@@ -98,6 +113,10 @@ class FlxInputTextRTL extends FlxInputText
 		}, true);
 	}
 
+	/**
+	 * Were getting the text from an invisible input text and it isnt openFL/flixel related.
+	 * we have to keep it selected
+	 */
 	function updateFocus()
 	{
 		textInput.focus();
@@ -181,15 +200,17 @@ class FlxInputTextRTL extends FlxInputText
 }
 #else
 /**
- * FlxInputText with support for RTL languages.
+ * Reguar FlxInputText with extended support for:
+ * - All languages
+ * - Bi-directional text
+ * - Multilne (Almost!)
  */
 class FlxInputTextRTL extends FlxInputText 
 {
-	var lastLetter:String;
 
-	var __rtlOffset:Int = 0;
 	/**
 	 * Creates a new multi-line text input with support for all languages - both RTL and LTR.
+	 * 
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
 	 * @param	Width			The width of the text object (height is determined automatically).
@@ -242,6 +263,7 @@ class FlxInputTextRTL extends FlxInputText
 	 * This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
 	 * `specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
 	 * presses, so pay attention to that when overriding.
+	 * 
 	 * @param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
 	 * @param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
 	 */
