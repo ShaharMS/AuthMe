@@ -189,6 +189,7 @@ class FlxInputTextRTL extends FlxInputText
 
 	var __rtlOffset:Int = 0;
 	/**
+	 * Creates a new multi-line text input with support for all languages - both RTL and LTR.
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
 	 * @param	Width			The width of the text object (height is determined automatically).
@@ -201,102 +202,147 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
-		Lib.application.window.onTextInput.add((te) -> {
-			if (caretIndex < 0) caretIndex = 0;
-			var t = if (te != null) te.remove("‏") else "";
 
-			if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
-			{
-				if ((FlxCharMaps.rtlLetterArray.contains(t) || (t == " " && FlxCharMaps.rtlLetterArray.contains(lastLetter)))) {
-					
-				} else {
-					caretIndex ++;
-				}
-				text = insertSubstring(text, t, caretIndex);
-
-				text = text; // forces scroll update
-				if (te != " ") {
-					lastLetter = te;					
-				}
-
-				onChange(FlxInputText.INPUT_ACTION);
-			}
-		}, false, 2);
-
-		Lib.application.window.onKeyDown.add( (key, modifier) -> {
-			if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
-			if (caretIndex < 0)
-				caretIndex = 0;
-			if (~/1073741904|1073741903/.match(key + ""))
-			{
-				// left arrow
-				if (key == 1073741904)
-				{
-					if (caretIndex > 0) caretIndex--;
-				}
-				else //right arrow
-				{
-					if (caretIndex < text.length) caretIndex++;
-				}
-			}
-			// backspace key
-			else if (key == 8)
-			{
-				if (caretIndex > 0)
-				{
-					caretIndex--;
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-					onChange(FlxInputText.BACKSPACE_ACTION);
-				}
-			}
-			// delete key
-			else if (key == 127)
-			{
-				if (text.length > 0 && caretIndex < text.length)
-				{
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-					onChange(FlxInputText.DELETE_ACTION);
-					text = text;
-				}
-			}
-			// end key
-			else if (key == 36)
-			{
-				caretIndex = text.length;
-				text = text; // forces scroll update
-			}
-			// home key
-			else if (key == 35)
-			{
-				caretIndex = 0;
-				text = text; // forces scroll update
-			}
-		}, false, 1);
+		Lib.application.window.onTextInput.add(regularKeysDown, false, 1);
+		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
 	}
 
 	override function set_hasFocus(newFocus:Bool):Bool {
-		if (newFocus) {
-			if (hasFocus != newFocus) {
+		if (newFocus) { //text input is selected
+			if (hasFocus != newFocus) { //text input wasnt selected before this selection
 				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
 				caret.visible = true;
 				caretIndex = text.length;
 				
 			}
-		} else {
-			// Graphics
+		} else { //text input isnt selected, update the caret's graphic to show that
 			caret.visible = false;
 			if (_caretTimer != null) {
 				_caretTimer.cancel();
 			}
 		}
 
-		if (newFocus != hasFocus) {
+		if (newFocus != hasFocus) { //if the status has changed, redraw the current frame
 			calcFrame();
 		}
 		return hasFocus = newFocus;
 	}
 	
+	/**
+	   The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
+	  
+	  | Function | Job |
+	  | --- | --- |
+	  | **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
+	  | **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
+	 **/
 	override function onKeyDown(e:KeyboardEvent) {}
 
+	/**
+	 * This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
+	 * `specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+	 * presses, so pay attention to that when overriding.
+	 * @param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
+	 * @param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
+	 */
+	function specialKeysDown(key:KeyCode, modifier:KeyModifier) {
+		//if the user didnt intend to edit the text, dont do anything
+		if (!hasFocus) return;
+		//those keys break the caret and places it in caretIndex -1
+		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
+		//fix the caret if its broken
+		if (caretIndex < 0) caretIndex = 0;
+
+		//arrow keys (LEFT / RIGHT)
+		if (~/1073741904|1073741903/.match(key + ""))
+		{
+			// left arrow
+			if (key == 1073741904)
+			{
+				if (caretIndex > 0) {
+					caretIndex--;
+				}
+			}
+			else // right arrow
+			{
+				if (caretIndex < text.length) {
+					caretIndex++;
+				}
+			}
+		}
+		// backspace key
+		else if (key == 8)
+		{
+			if (caretIndex > 0)
+			{
+				if (FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1))
+					|| FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				} else {
+					caretIndex--;
+					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				}
+				
+				onChange(FlxInputText.BACKSPACE_ACTION);
+			}
+		}
+		// delete key
+		else if (key == 127)
+		{
+			if (text.length > 0 && caretIndex < text.length)
+			{
+				if (FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1)) || FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
+					caretIndex--;
+				} else {
+					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				}
+				onChange(FlxInputText.DELETE_ACTION);
+				text = text;
+			}
+		}
+		// end key
+		else if (key == 36)
+		{
+			caretIndex = text.length;
+			text = text; // forces scroll update
+		}
+		// home key
+		else if (key == 35)
+		{
+			caretIndex = 0;
+			text = text; // forces scroll update
+		}
+	}
+
+	/**
+	 * This function replaces `onKeyDown` with support for RTL & LTR letter input
+	 * `regularKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+	 * presses, so pay attention to that when overriding.
+	 * @param letter the letter outputted from the current key-press according to lime's `window.onTextInput`
+	 */
+	function regularKeysDown(letter:String) {
+		// if the user didnt intend to edit the text, dont do anything
+		if (!hasFocus) return
+		//if the caret is broken for some reason, fix it
+		if (caretIndex < 0) caretIndex = 0;
+		//set up the letter - remove null chars, add rtl mark to letters from RTL languages
+		var t:String = "";
+		if (letter != null) {
+			if (FlxCharMaps.rtlLetterArray.contains(letter)) { t = "‏" + letter;}
+			else t = letter;
+		} else "";
+
+		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
+		{
+			caretIndex++;
+			
+			text = insertSubstring(text, t, caretIndex - 1);
+
+			text = text; // forces scroll update
+			
+			onChange(FlxInputText.INPUT_ACTION);
+		}
+	}
 }
 #end
